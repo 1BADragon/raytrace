@@ -3,7 +3,14 @@ project(raytrace)
 
 
 set(srcs
-    src/main.cpp)
+    src/main.cpp src/vec3.cpp src/common.cpp src/color.cpp
+    src/hitrecord.cpp src/hittablelist.cpp src/sphere.cpp
+    src/ray.cpp src/camera.cpp
+
+    src/materials/metal.cpp src/materials/lambertian.cpp
+    src/materials/dielectric.cpp
+    )
 
 add_executable(${PROJECT_NAME} ${srcs})
 target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra)
+target_include_directories(${PROJECT_NAME} PUBLIC src)
