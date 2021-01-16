@@ -2,8 +2,8 @@
 #define CHECKERTEXTURE_H
 
 #include <memory>
-#include <texture.h>
-#include <solidcolor.h>
+#include <textures/texture.h>
+#include <textures/solidcolor.h>
 
 class CheckerTexture : public Texture
 {

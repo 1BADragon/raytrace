@@ -1,7 +1,7 @@
 #ifndef SOLIDCOLOR_H
 #define SOLIDCOLOR_H
 
-#include <texture.h>
+#include <textures/texture.h>
 
 class SolidColor : public Texture {
 public:

@@ -7,7 +7,8 @@ set(srcs
     src/hitrecord.cpp src/hittablelist.cpp src/sphere.cpp
     src/ray.cpp src/camera.cpp src/bvhnode.cpp src/aabb.cpp
 
-    src/solidcolor.cpp src/checkertexture.cpp
+    src/textures/solidcolor.cpp src/textures/checkertexture.cpp
+    src/textures/perlin.cpp
 
     src/materials/metal.cpp src/materials/lambertian.cpp
     src/materials/dielectric.cpp

@@ -4,7 +4,7 @@
 #include <memory>
 #include <materials/material.h>
 #include <color.h>
-#include <solidcolor.h>
+#include <textures.h>
 
 class HitRecord;
 class Ray;

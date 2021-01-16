@@ -1,4 +1,4 @@
-#include <checkertexture.h>
+#include <textures/checkertexture.h>
 
 Color CheckerTexture::value(double u, double v, const Point3 &p) const
 {

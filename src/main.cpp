@@ -10,12 +10,11 @@
 #include <sphere.h>
 #include <camera.h>
 #include <materials.h>
-#include <solidcolor.h>
-#include <checkertexture.h>
+#include <textures.h>
 
 // Some general constants
 constexpr double ASPECT_RATIO = 16.0 / 9.0;
-constexpr int IMAGE_WIDTH = 600;
+constexpr int IMAGE_WIDTH = 1200;
 constexpr int IMAGE_HEIGHT = IMAGE_WIDTH / ASPECT_RATIO;
 constexpr int SAMPLES_PER_PIXEL = 50;
 constexpr int MAX_DEPTH = 50;
@@ -46,14 +45,14 @@ static Color ray_color(const Ray &r, std::shared_ptr<Hittable> world, int depth)
     return (1.0 - t) * Color(1.0, 1.0, 1.0) + t * Color(0.5, 0.7, 1.0);
 }
 
-static std::shared_ptr<Hittable> random_scene() {
+static std::shared_ptr<HittableList> random_scene() {
     auto world = std::make_shared<HittableList>();
 
     auto checker = std::make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(.9, .9, .9));
     world->add(std::make_shared<Sphere>(Point3(0, -1000, 0), 1000, std::make_shared<Lambertian>(checker)));
 
-//    auto ground_material = std::make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
-//    world->add(std::make_shared<Sphere>(Point3(0., -1000., 0.), 1000., ground_material));
+    //    auto ground_material = std::make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
+    //    world->add(std::make_shared<Sphere>(Point3(0., -1000., 0.), 1000., ground_material));
 
     for (int a = -11; a <= 11; ++a) {
         for (int b = -11; b < 11; ++b) {
@@ -94,19 +93,74 @@ static std::shared_ptr<Hittable> random_scene() {
     return world;
 }
 
+static std::shared_ptr<HittableList> two_spheres()
+{
+    auto objects = std::make_shared<HittableList>();
+
+    auto checker = std::make_shared<CheckerTexture>(Color(.2, .3, .1),
+                                                    Color(.9, .9, .9));
+
+    auto lambertian = std::make_shared<Lambertian>(checker);
+
+    objects->add(std::make_shared<Sphere>(Point3(0, -10, 0), 10, lambertian));
+    objects->add(std::make_shared<Sphere>(Point3(0, 10, 0), 10, lambertian));
+
+    return objects;
+}
+
+static std::shared_ptr<HittableList> two_perlin_spheres()
+{
+    auto objects = std::make_shared<HittableList>();
+
+    auto pertext = std::make_shared<NoiseTexture>(4);
+    auto lambertian = std::make_shared<Lambertian>(pertext);
+
+    objects->add(std::make_shared<Sphere>(Point3(0, -1000, 0), 1000, lambertian));
+    objects->add(std::make_shared<Sphere>(Point3(0, 2, 0), 2, lambertian));
+
+    return objects;
+}
+
 int main(void) {
 
     // World
-    auto world = random_scene();
+    std::shared_ptr<HittableList> world;
+
+    Point3 lookfrom;
+    Point3 lookat;
+    auto vfov = 40.0;
+    auto aperture = 0.0;
+
+    switch(0) {
+    case 1:
+        world = random_scene();
+        lookfrom = Point3(13, 2, 3);
+        lookat = Point3(0, 0, 0);
+        vfov = 20.0;
+        aperture = 0.1;
+        break;
+
+    case 2:
+        world = two_spheres();
+        lookfrom = Point3(13, 2, 3);
+        lookat = Point3(0, 0, 0);
+        vfov = 20.0;
+        break;
+
+    case 3:
+    default:
+        world = two_perlin_spheres();
+        lookfrom = Point3(13, 2, 3);
+        lookat = Point3(0, 0, 0);
+        vfov = 20.0;
+        break;
+    }
 
     // Camera
-    Point3 lookfrom(13., 2., 3.);
-    Point3 lookat(0., 0., 0.);
-    Vec3 vup(0., 1., 0.);
-    double dist_to_focus = 10.;
-    double aperture = 0.1;
+    Vec3 vup(0, 1, 0);
+    auto dist_to_focus = 10.0;
 
-    Camera camera(lookfrom, lookat, vup, 20., ASPECT_RATIO, aperture, dist_to_focus, 0.0, 1.0);
+    Camera camera(lookfrom, lookat, vup, vfov, ASPECT_RATIO, aperture, dist_to_focus, 0.0, 1.0);
 
     std::cout << "P3\n" << IMAGE_WIDTH << ' ' << IMAGE_HEIGHT << "\n255\n";
 
