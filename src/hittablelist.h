@@ -8,15 +8,19 @@
 class HittableList : public Hittable
 {
 public:
-    HittableList() : objects() {}
+    HittableList() : _objects() {}
 
-    void clear() { objects.clear(); }
-    void add(std::shared_ptr<Hittable> object) { objects.push_back(object); }
+    void clear() { _objects.clear(); }
+    void add(std::shared_ptr<Hittable> object) { _objects.push_back(object); }
 
     virtual bool hit(const Ray &r, double min, double max, HitRecord &rec) const override;
 
+    virtual bool bounding_box(double time0, double time1, Aabb &output_box) const override;
+
+    const std::vector<std::shared_ptr<Hittable>>& objects() const;
+
 private:
-    std::vector<std::shared_ptr<Hittable>> objects;
+    std::vector<std::shared_ptr<Hittable>> _objects;
 };
 
 #endif // HITTABLELIST_H

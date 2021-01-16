@@ -23,7 +23,7 @@ bool Dielectric::scatter(const Ray &r_in, const HitRecord &rec, Color &attenuati
         direction = Vec3::refract(unit_direction, rec.normal, refraction_radio);
     }
 
-    scattered = Ray(rec.p, direction);
+    scattered = Ray(rec.p, direction, r_in.time());
     return true;
 }
 

@@ -7,6 +7,7 @@
 constexpr double infinity = std::numeric_limits<double>::infinity();
 constexpr double pi = M_PI;
 
+int random_int(int min, int max);
 double degrees_to_radians(double degrees);
 double random_double(void);
 double random_double(double min, double max);

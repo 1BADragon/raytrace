@@ -12,7 +12,7 @@ public:
 
     static Vec3 random();
     static Vec3 random_ranged(double min, double max);
-    static Vec3 random_unit_sphere();
+    static Vec3 random_in_unit_sphere();
     static Vec3 random_in_hemi(const Vec3 &normal);
     static Vec3 random_unit_vec();
     static Vec3 reflect(const Vec3 &v, const Vec3 &n);

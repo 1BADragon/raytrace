@@ -1,7 +1,7 @@
 #include <common.h>
 #include <camera.h>
 
-Camera::Camera(const Point3 &lookfrom, const Point3 &lookat, const Vec3 &vup, double vfov, double aspect_ratio, double aperture, double focus_dist)
+Camera::Camera(const Point3 &lookfrom, const Point3 &lookat, const Vec3 &vup, double vfov, double aspect_ratio, double aperture, double focus_dist, double _time0, double _time1)
 {
     auto theta = degrees_to_radians(vfov);
     auto h = std::tan(theta / 2.);
@@ -24,6 +24,8 @@ Camera::Camera(const Point3 &lookfrom, const Point3 &lookat, const Vec3 &vup, do
     this->v = v;
     this->w = w;
     this->lens_radius = aperture / 2.;
+    this->time0 = _time0;
+    this->time1 = _time1;
 }
 
 Ray Camera::get_ray(double s, double t) const
@@ -33,5 +35,6 @@ Ray Camera::get_ray(double s, double t) const
 
     return Ray(this->origin + offset,
                this->lower_left_corner + s * this->horizontal + t *
-                    this->vertical - this->origin - offset);
+                    this->vertical - this->origin - offset,
+                    random_double(time0, time1));
 }

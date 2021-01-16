@@ -27,7 +27,7 @@ Vec3 Vec3::random_ranged(double min, double max)
                 random_double(min, max));
 }
 
-Vec3 Vec3::random_unit_sphere()
+Vec3 Vec3::random_in_unit_sphere()
 {
     for (;;) {
         auto p = Vec3::random_ranged(-1., 1.);
@@ -40,7 +40,7 @@ Vec3 Vec3::random_unit_sphere()
 
 Vec3 Vec3::random_in_hemi(const Vec3 &normal)
 {
-    auto unit_sphere = Vec3::random_unit_sphere();
+    auto unit_sphere = Vec3::random_in_unit_sphere();
     if (unit_sphere.dot(normal) > 0.0) {
         return unit_sphere;
     } else {
@@ -49,7 +49,7 @@ Vec3 Vec3::random_in_hemi(const Vec3 &normal)
 }
 
 Vec3 Vec3::random_unit_vec() {
-    return random_unit_sphere().unit_vector();
+    return random_in_unit_sphere().unit_vector();
 }
 
 Vec3 Vec3::reflect(const Vec3 &v, const Vec3 &n)
@@ -107,11 +107,10 @@ Vec3 Vec3::unit_vector() const
 
 bool Vec3::near_zero() const
 {
-    double s = 1e-8;
-    return std::abs(x()) < s &&
-            std::abs(y()) < s &&
-            std::abs(z()) < s;
-
+    const double s = 1e-8;
+    return (std::fabs(x()) < s) &&
+            (std::fabs(y()) < s) &&
+            (std::fabs(z()) < s);
 }
 
 Vec3 Vec3::operator-() const
@@ -158,11 +157,7 @@ Vec3& Vec3::operator*=(double rhs)
 
 Vec3& Vec3::operator/=(double rhs)
 {
-    _x /= rhs;
-    _y /= rhs;
-    _z /= rhs;
-
-    return *this;
+    return *this *= 1./rhs;
 }
 
 Vec3 Vec3::operator+(const Vec3 &rhs) const

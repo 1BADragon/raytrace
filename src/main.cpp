@@ -10,12 +10,14 @@
 #include <sphere.h>
 #include <camera.h>
 #include <materials.h>
+#include <solidcolor.h>
+#include <checkertexture.h>
 
 // Some general constants
-constexpr double ASPECT_RATIO = 3.0 / 2.0;
-constexpr int IMAGE_WIDTH = 1200;
+constexpr double ASPECT_RATIO = 16.0 / 9.0;
+constexpr int IMAGE_WIDTH = 600;
 constexpr int IMAGE_HEIGHT = IMAGE_WIDTH / ASPECT_RATIO;
-constexpr int SAMPLES_PER_PIXEL = 2;
+constexpr int SAMPLES_PER_PIXEL = 50;
 constexpr int MAX_DEPTH = 50;
 
 static Color ray_color(const Ray &r, std::shared_ptr<Hittable> world, int depth)
@@ -47,8 +49,11 @@ static Color ray_color(const Ray &r, std::shared_ptr<Hittable> world, int depth)
 static std::shared_ptr<Hittable> random_scene() {
     auto world = std::make_shared<HittableList>();
 
-    auto ground_material = std::make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
-    world->add(std::make_shared<Sphere>(Point3(0., -1000., 0.), 1000., ground_material));
+    auto checker = std::make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(.9, .9, .9));
+    world->add(std::make_shared<Sphere>(Point3(0, -1000, 0), 1000, std::make_shared<Lambertian>(checker)));
+
+//    auto ground_material = std::make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
+//    world->add(std::make_shared<Sphere>(Point3(0., -1000., 0.), 1000., ground_material));
 
     for (int a = -11; a <= 11; ++a) {
         for (int b = -11; b < 11; ++b) {
@@ -60,7 +65,8 @@ static std::shared_ptr<Hittable> random_scene() {
                     // diffuse
                     auto albedo = Color::random() * Color::random();
                     auto sphere_mat = std::make_shared<Lambertian>(albedo);
-                    world->add(std::make_shared<Sphere>(center, 0.2, sphere_mat));
+                    auto center2 = center + Vec3(0, random_double(0, 0.5), 0);
+                    world->add(std::make_shared<Sphere>(center, center2, 0.0, 1.0, 0.2, sphere_mat));
                 } else if (choose_mat < 0.95) {
                     // metal
                     auto albedo = Color::random_ranged(0.5, 1.0);
@@ -100,7 +106,7 @@ int main(void) {
     double dist_to_focus = 10.;
     double aperture = 0.1;
 
-    Camera camera(lookfrom, lookat, vup, 20., ASPECT_RATIO, aperture, dist_to_focus);
+    Camera camera(lookfrom, lookat, vup, 20., ASPECT_RATIO, aperture, dist_to_focus, 0.0, 1.0);
 
     std::cout << "P3\n" << IMAGE_WIDTH << ' ' << IMAGE_HEIGHT << "\n255\n";
 

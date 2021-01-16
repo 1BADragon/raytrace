@@ -6,8 +6,8 @@ Ray::Ray() :
 
 }
 
-Ray::Ray(const Point3 &orig, const Vec3 &dir) :
-    orig(orig), dir(dir)
+Ray::Ray(const Point3 &orig, const Vec3 &dir, double time) :
+    orig(orig), dir(dir), tm(time)
 {
 
 }
