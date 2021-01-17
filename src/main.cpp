@@ -14,12 +14,13 @@
 
 // Some general constants
 constexpr double ASPECT_RATIO = 16.0 / 9.0;
-constexpr int IMAGE_WIDTH = 1200;
+constexpr int IMAGE_WIDTH = 1600;
 constexpr int IMAGE_HEIGHT = IMAGE_WIDTH / ASPECT_RATIO;
-constexpr int SAMPLES_PER_PIXEL = 50;
+constexpr int SAMPLES_PER_PIXEL = 100;
 constexpr int MAX_DEPTH = 50;
 
-static Color ray_color(const Ray &r, std::shared_ptr<Hittable> world, int depth)
+static Color ray_color(const Ray &r, const Color &background,
+                       std::shared_ptr<Hittable> world, int depth)
 {
     if (depth <= 0) {
         return Color();
@@ -27,22 +28,19 @@ static Color ray_color(const Ray &r, std::shared_ptr<Hittable> world, int depth)
 
     auto rec = HitRecord();
 
-    if (world->hit(r, 0.001, infinity, rec)) {
-        Ray scattered;
-        Color attenuation;
-        if (rec.mat) {
-            if (rec.mat->scatter(r, rec, attenuation, scattered)) {
-                return attenuation * ray_color(scattered, world, depth-1);
-            }
-        } else {
-            return Color();
-        }
+    if (!world->hit(r, 0.001, infinity, rec)) {
+        return background;
     }
 
-    auto unit_direction = r.direction().unit_vector();
-    auto t = 0.5 * (unit_direction.y() + 1.0);
+    Ray scattered;
+    Color attenuation;
+    Color emitted = rec.mat->emitted(rec.u, rec.v, rec.p);
 
-    return (1.0 - t) * Color(1.0, 1.0, 1.0) + t * Color(0.5, 0.7, 1.0);
+    if (!rec.mat->scatter(r, rec, attenuation, scattered)) {
+        return emitted;
+    }
+
+    return emitted + attenuation * ray_color(scattered, background, world, depth-1);
 }
 
 static std::shared_ptr<HittableList> random_scene() {
@@ -121,6 +119,17 @@ static std::shared_ptr<HittableList> two_perlin_spheres()
     return objects;
 }
 
+static std::shared_ptr<HittableList> earth() {
+    auto earth_texture = std::make_shared<ImageTexture>("earthmap.jpg");
+    auto earth_surface = std::make_shared<Lambertian>(earth_texture);
+    auto globe = std::make_shared<Sphere>(Point3(0,0,0), 2, earth_surface);
+
+    auto scene = std::make_shared<HittableList>();
+    scene->add(globe);
+
+    return scene;
+}
+
 int main(void) {
 
     // World
@@ -130,10 +139,12 @@ int main(void) {
     Point3 lookat;
     auto vfov = 40.0;
     auto aperture = 0.0;
+    Color background(0, 0, 0);
 
     switch(0) {
     case 1:
         world = random_scene();
+        background = Color(.7, .8, 1.);
         lookfrom = Point3(13, 2, 3);
         lookat = Point3(0, 0, 0);
         vfov = 20.0;
@@ -142,17 +153,31 @@ int main(void) {
 
     case 2:
         world = two_spheres();
+        background = Color(0.70, 0.80, 1.00);
         lookfrom = Point3(13, 2, 3);
         lookat = Point3(0, 0, 0);
         vfov = 20.0;
         break;
 
     case 3:
-    default:
         world = two_perlin_spheres();
+        background = Color(0.70, 0.80, 1.00);
         lookfrom = Point3(13, 2, 3);
         lookat = Point3(0, 0, 0);
         vfov = 20.0;
+        break;
+
+    case 4:
+        world = earth();
+        background = Color(0.70, 0.80, 1.00);
+        lookfrom = Point3(13, 2, 3);
+        lookat = Point3(0, 0, 0);
+        vfov = 20.0;
+        break;
+
+    case 5:
+    default:
+        background = Color(0, 0, 0);
         break;
     }
 
@@ -172,7 +197,7 @@ int main(void) {
                 auto u = (i + random_double()) / (IMAGE_WIDTH - 1);
                 auto v = (j + random_double()) / (IMAGE_HEIGHT - 1);
                 Ray r = camera.get_ray(u, v);
-                pixel_color += ray_color(r, world, MAX_DEPTH);
+                pixel_color += ray_color(r, background, world, MAX_DEPTH);
             }
             write_color(std::cout, pixel_color, SAMPLES_PER_PIXEL);
         }
