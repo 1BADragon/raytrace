@@ -20,10 +20,11 @@
 
 // Some general constants
 constexpr double ASPECT_RATIO = 1.;
-constexpr int IMAGE_WIDTH = 1000;
+constexpr int IMAGE_WIDTH = 500;
 constexpr int IMAGE_HEIGHT = IMAGE_WIDTH / ASPECT_RATIO;
-constexpr int SAMPLES_PER_PIXEL = 10000;
+constexpr int SAMPLES_PER_PIXEL = 50;
 constexpr int MAX_DEPTH = 50;
+
 
 static Color ray_color(const Ray &r, const Color &background,
                        std::shared_ptr<Hittable> world, int depth)
@@ -285,7 +286,7 @@ int main(void) {
     auto aperture = 0.0;
     Color background(0, 0, 0);
 
-    switch(0) {
+    switch(4) {
     case 1:
         world = random_scene();
         background = Color(.7, .8, 1.);
