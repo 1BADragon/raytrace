@@ -1,4 +1,7 @@
 #include <iostream>
+#include <mutex>
+#include <thread>
+#include <optional>
 
 #include <vec3.h>
 #include <color.h>
@@ -24,6 +27,7 @@ constexpr int IMAGE_WIDTH = 1000;
 constexpr int IMAGE_HEIGHT = IMAGE_WIDTH / ASPECT_RATIO;
 constexpr int SAMPLES_PER_PIXEL = 10000;
 constexpr int MAX_DEPTH = 50;
+constexpr int N_THREADS = 4;
 
 static Color ray_color(const Ray &r, const Color &background,
                        std::shared_ptr<Hittable> world, int depth)
@@ -273,6 +277,78 @@ static std::shared_ptr<HittableList> final_scene() {
     return objects;
 }
 
+class Jobs {
+public:
+    Jobs(int scanlines, int width) : next_scanline(scanlines-1)
+    {
+        pixmap.resize(scanlines);
+
+        for (int i = 0; i < scanlines; ++i) {
+            pixmap[i].resize(width);
+        }
+    }
+
+    std::optional<int> get_next()
+    {
+        std::lock_guard _(this->mut);
+        if (next_scanline < 0) {
+            return std::nullopt;
+        } else {
+            int tmp = next_scanline;
+            std::clog << "\rScanlines remaning: " << next_scanline << ' ' << std::flush;
+            next_scanline--;
+            return tmp;
+        }
+    }
+
+    void set(int x, int y, Color c) {
+        std::lock_guard _(this->mut);
+        pixmap[y][x] = c;
+    }
+
+    void set(int y, const std::vector<Color> &colors) {
+        std::lock_guard _(this->mut);
+        pixmap[y] = colors;
+    }
+
+    Color get(int x, int y) {
+        std::lock_guard _(this->mut);
+        return pixmap[y][x];
+    }
+
+private:
+    std::mutex mut;
+    int next_scanline;
+    std::vector<std::vector<Color>> pixmap;
+};
+
+static void worker(std::shared_ptr<Jobs> jobs, Camera *camera, std::shared_ptr<HittableList> world, Color *background)
+{
+    std::vector<Color> row;
+    row.resize(IMAGE_WIDTH);
+
+    for(;;) {
+        auto j_opt = jobs->get_next();
+
+        if (!j_opt) {
+            return;
+        }
+        int j = j_opt.value();
+
+        for (int i = 0; i < IMAGE_WIDTH; ++i) {
+            Color pixel_color;
+            for (int s = 0; s < SAMPLES_PER_PIXEL; ++s) {
+                auto u = (i + random_double()) / (IMAGE_WIDTH - 1);
+                auto v = (j + random_double()) / (IMAGE_HEIGHT - 1);
+                Ray r = camera->get_ray(u, v);
+                pixel_color += ray_color(r, *background, world, MAX_DEPTH);
+            }
+            row[i] = pixel_color;
+        }
+        jobs->set(j, row);
+    }
+
+}
 
 int main(void) {
 
@@ -358,19 +434,24 @@ int main(void) {
 
     Camera camera(lookfrom, lookat, vup, vfov, ASPECT_RATIO, aperture, dist_to_focus, 0.0, 1.0);
 
+    auto jobs = std::make_shared<Jobs>(IMAGE_HEIGHT, IMAGE_WIDTH);
+    std::vector<std::thread> workers;
+
+    for (int i = 0; i < N_THREADS; ++i) {
+        auto thread = std::thread(worker, jobs, &camera, world, &background);
+        workers.push_back(std::move(thread));
+    }
+
+    for (auto &worker : workers) {
+        worker.join();
+    }
+
+
     std::cout << "P3\n" << IMAGE_WIDTH << ' ' << IMAGE_HEIGHT << "\n255\n";
 
     for (int j = IMAGE_HEIGHT-1; j >= 0; --j) {
-        std::clog << "\rScanlines remaning: " << j << ' ' << std::flush;
         for (int i = 0; i < IMAGE_WIDTH; ++i) {
-            Color pixel_color;
-            for (int s = 0; s < SAMPLES_PER_PIXEL; ++s) {
-                auto u = (i + random_double()) / (IMAGE_WIDTH - 1);
-                auto v = (j + random_double()) / (IMAGE_HEIGHT - 1);
-                Ray r = camera.get_ray(u, v);
-                pixel_color += ray_color(r, background, world, MAX_DEPTH);
-            }
-            write_color(std::cout, pixel_color, SAMPLES_PER_PIXEL);
+            write_color(std::cout, jobs->get(i, j), SAMPLES_PER_PIXEL);
         }
     }
 
