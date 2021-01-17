@@ -2,6 +2,9 @@
 #include <mutex>
 #include <thread>
 #include <optional>
+#include <atomic>
+#include <future>
+#include <assert.h>
 
 #include <vec3.h>
 #include <color.h>
@@ -23,9 +26,9 @@
 
 // Some general constants
 constexpr double ASPECT_RATIO = 1.;
-constexpr int IMAGE_WIDTH = 1000;
+constexpr int IMAGE_WIDTH = 500;
 constexpr int IMAGE_HEIGHT = IMAGE_WIDTH / ASPECT_RATIO;
-constexpr int SAMPLES_PER_PIXEL = 10000;
+constexpr int SAMPLES_PER_PIXEL = 100;
 constexpr int MAX_DEPTH = 50;
 constexpr int N_THREADS = 4;
 
@@ -277,63 +280,23 @@ static std::shared_ptr<HittableList> final_scene() {
     return objects;
 }
 
-class Jobs {
-public:
-    Jobs(int scanlines, int width) : next_scanline(scanlines-1)
-    {
-        pixmap.resize(scanlines);
-
-        for (int i = 0; i < scanlines; ++i) {
-            pixmap[i].resize(width);
-        }
-    }
-
-    std::optional<int> get_next()
-    {
-        std::lock_guard _(this->mut);
-        if (next_scanline < 0) {
-            return std::nullopt;
-        } else {
-            int tmp = next_scanline;
-            std::clog << "\rScanlines remaning: " << next_scanline << ' ' << std::flush;
-            next_scanline--;
-            return tmp;
-        }
-    }
-
-    void set(int x, int y, Color c) {
-        std::lock_guard _(this->mut);
-        pixmap[y][x] = c;
-    }
-
-    void set(int y, const std::vector<Color> &colors) {
-        std::lock_guard _(this->mut);
-        pixmap[y] = colors;
-    }
-
-    Color get(int x, int y) {
-        std::lock_guard _(this->mut);
-        return pixmap[y][x];
-    }
-
-private:
-    std::mutex mut;
-    int next_scanline;
-    std::vector<std::vector<Color>> pixmap;
-};
-
-static void worker(std::shared_ptr<Jobs> jobs, Camera *camera, std::shared_ptr<HittableList> world, Color *background)
+static std::vector<std::vector<Color>>
+worker(Camera *camera, std::shared_ptr<HittableList> world,
+       Color *background, int n)
 {
-    std::vector<Color> row;
-    row.resize(IMAGE_WIDTH);
+    std::vector<std::vector<Color>> image_part;
 
-    for(;;) {
-        auto j_opt = jobs->get_next();
+    size_t to_do = IMAGE_HEIGHT / N_THREADS;
 
-        if (!j_opt) {
-            return;
-        }
-        int j = j_opt.value();
+    int start = n * to_do;
+    int end = (n+1) * to_do - 1;
+
+    std::clog << "Thread " << n << "start: " << start << " end: " << end << std::endl;
+
+    image_part.resize(to_do);
+
+    for(int j = start; j <= end; ++j) {
+        image_part[j - start].resize(IMAGE_WIDTH);
 
         for (int i = 0; i < IMAGE_WIDTH; ++i) {
             Color pixel_color;
@@ -343,11 +306,10 @@ static void worker(std::shared_ptr<Jobs> jobs, Camera *camera, std::shared_ptr<H
                 Ray r = camera->get_ray(u, v);
                 pixel_color += ray_color(r, *background, world, MAX_DEPTH);
             }
-            row[i] = pixel_color;
+            image_part[j - start][i] = pixel_color;
         }
-        jobs->set(j, row);
     }
-
+    return image_part;
 }
 
 int main(void) {
@@ -361,7 +323,7 @@ int main(void) {
     auto aperture = 0.0;
     Color background(0, 0, 0);
 
-    switch(0) {
+    switch(4) {
     case 1:
         world = random_scene();
         background = Color(.7, .8, 1.);
@@ -434,24 +396,22 @@ int main(void) {
 
     Camera camera(lookfrom, lookat, vup, vfov, ASPECT_RATIO, aperture, dist_to_focus, 0.0, 1.0);
 
-    auto jobs = std::make_shared<Jobs>(IMAGE_HEIGHT, IMAGE_WIDTH);
-    std::vector<std::thread> workers;
+    std::vector<std::future<std::vector<std::vector<Color>>>> workers;
 
     for (int i = 0; i < N_THREADS; ++i) {
-        auto thread = std::thread(worker, jobs, &camera, world, &background);
+        auto thread = std::async(worker, &camera, world, &background, i);
         workers.push_back(std::move(thread));
     }
 
-    for (auto &worker : workers) {
-        worker.join();
-    }
-
-
     std::cout << "P3\n" << IMAGE_WIDTH << ' ' << IMAGE_HEIGHT << "\n255\n";
 
-    for (int j = IMAGE_HEIGHT-1; j >= 0; --j) {
-        for (int i = 0; i < IMAGE_WIDTH; ++i) {
-            write_color(std::cout, jobs->get(i, j), SAMPLES_PER_PIXEL);
+    for (auto &worker : workers) {
+        auto ret = worker.get();
+
+        for (auto &r : ret) {
+            for (auto &color : r) {
+                write_color(std::cout, color, SAMPLES_PER_PIXEL);
+            }
         }
     }
 
