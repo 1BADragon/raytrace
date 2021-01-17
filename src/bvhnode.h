@@ -13,8 +13,8 @@ class BvhNode : public Hittable
 public:
     BvhNode();
 
-    BvhNode(const HittableList& list, double time0, double time1)
-        : BvhNode(list.objects(), 0, list.objects().size(), time0, time1)
+    BvhNode(const std::shared_ptr<HittableList> list, double time0, double time1)
+        : BvhNode(list->objects(), 0, list->objects().size(), time0, time1)
     {}
 
     BvhNode(const std::vector<std::shared_ptr<Hittable>>& src_objects,
