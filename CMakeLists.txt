@@ -5,15 +5,18 @@ add_subdirectory(deps)
 
 set(srcs
     src/main.cpp src/vec3.cpp src/common.cpp src/color.cpp
-    src/hitrecord.cpp src/hittablelist.cpp src/sphere.cpp
-    src/ray.cpp src/camera.cpp src/bvhnode.cpp src/aabb.cpp
-    src/stb.cpp
+    src/hitrecord.cpp src/hittablelist.cpp src/ray.cpp
+    src/camera.cpp src/bvhnode.cpp src/aabb.cpp src/stb.cpp
+    src/translate.cpp src/rotatey.cpp src/constantmedium.cpp
+
+    src/sphere.cpp src/aarect.cpp src/box.cpp
 
     src/textures/solidcolor.cpp src/textures/checkertexture.cpp
     src/textures/perlin.cpp src/textures/imagetexture.cpp
 
     src/materials/metal.cpp src/materials/lambertian.cpp
     src/materials/dielectric.cpp src/materials/diffuselight.cpp
+    src/materials/isotropic.cpp
     )
 
 add_executable(${PROJECT_NAME} ${srcs})

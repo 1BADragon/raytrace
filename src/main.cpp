@@ -8,15 +8,20 @@
 #include <hitrecord.h>
 #include <hittablelist.h>
 #include <sphere.h>
+#include <aarect.h>
+#include <box.h>
+#include <constantmedium.h>
 #include <camera.h>
 #include <materials.h>
 #include <textures.h>
+#include <rotatey.h>
+#include <translate.h>
 
 // Some general constants
-constexpr double ASPECT_RATIO = 16.0 / 9.0;
-constexpr int IMAGE_WIDTH = 1600;
+constexpr double ASPECT_RATIO = 1.;
+constexpr int IMAGE_WIDTH = 1200;
 constexpr int IMAGE_HEIGHT = IMAGE_WIDTH / ASPECT_RATIO;
-constexpr int SAMPLES_PER_PIXEL = 100;
+constexpr int SAMPLES_PER_PIXEL = 200;
 constexpr int MAX_DEPTH = 50;
 
 static Color ray_color(const Ray &r, const Color &background,
@@ -130,6 +135,79 @@ static std::shared_ptr<HittableList> earth() {
     return scene;
 }
 
+static std::shared_ptr<HittableList> simple_light()
+{
+    auto objects = std::make_shared<HittableList>();
+
+    auto pertext = std::make_shared<NoiseTexture>(4);
+    objects->add(std::make_shared<Sphere>(Point3(0, -1000, 0), 1000, std::make_shared<Lambertian>(pertext)));
+    objects->add(std::make_shared<Sphere>(Point3(0, 2, 0), 2, std::make_shared<Lambertian>(pertext)));
+
+    auto difflight = std::make_shared<DiffuseLight>(Color(4, 4, 4));
+    objects->add(std::make_shared<XYRect>(3, 5, 1, 3, -2, difflight));
+
+    return objects;
+}
+
+static std::shared_ptr<HittableList> cornell_box() {
+    auto objects = std::make_shared<HittableList>();
+
+    auto red   = std::make_shared<Lambertian>(Color(.65, .05, .05));
+    auto white = std::make_shared<Lambertian>(Color(.73, .73, .73));
+    auto green = std::make_shared<Lambertian>(Color(.12, .45, .15));
+    auto light = std::make_shared<DiffuseLight>(Color(15, 15, 15));
+
+    objects->add(std::make_shared<YZRect>(0, 555, 0, 555, 555, green));
+    objects->add(std::make_shared<YZRect>(0, 555, 0, 555, 0, red));
+    objects->add(std::make_shared<XZRect>(213, 343, 227, 332, 554, light));
+    objects->add(std::make_shared<XZRect>(0, 555, 0, 555, 0, white));
+    objects->add(std::make_shared<XZRect>(0, 555, 0, 555, 555, white));
+    objects->add(std::make_shared<XYRect>(0, 555, 0, 555, 555, white));
+
+
+    std::shared_ptr<Hittable> box1 = std::make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), white);
+    box1 = std::make_shared<RotateY>(box1, 15);
+    box1 = std::make_shared<Translate>(box1, Vec3(265, 0, 295));
+    objects->add(box1);
+
+    std::shared_ptr<Hittable> box2;
+    box2 = std::make_shared<Box>(Point3(0, 0, 0), Point3(165, 165, 165), white);
+    box2 = std::make_shared<RotateY>(box2, -18);
+    box2 = std::make_shared<Translate>(box2, Vec3(130, 0, 65));
+    objects->add(box2);
+
+    return objects;
+}
+
+static std::shared_ptr<HittableList> cornell_smoke() {
+    auto objects = std::make_shared<HittableList>();
+
+    auto red   = std::make_shared<Lambertian>(Color(.65, .05, .05));
+    auto white = std::make_shared<Lambertian>(Color(.73, .73, .73));
+    auto green = std::make_shared<Lambertian>(Color(.12, .45, .15));
+    auto light = std::make_shared<DiffuseLight>(Color(7, 7, 7));
+
+    objects->add(std::make_shared<YZRect>(0, 555, 0, 555, 555, green));
+    objects->add(std::make_shared<YZRect>(0, 555, 0, 555, 0, red));
+    objects->add(std::make_shared<XZRect>(113, 443, 127, 432, 554, light));
+    objects->add(std::make_shared<XZRect>(0, 555, 0, 555, 555, white));
+    objects->add(std::make_shared<XZRect>(0, 555, 0, 555, 0, white));
+    objects->add(std::make_shared<XYRect>(0, 555, 0, 555, 555, white));
+
+    std::shared_ptr<Hittable> box1 = std::make_shared<Box>(Point3(0,0,0), Point3(165,330,165), white);
+    box1 = std::make_shared<RotateY>(box1, 15);
+    box1 = std::make_shared<Translate>(box1, Vec3(265,0,295));
+
+    std::shared_ptr<Hittable> box2 = std::make_shared<Box>(Point3(0,0,0), Point3(165,165,165), white);
+    box2 = std::make_shared<RotateY>(box2, -18);
+    box2 = std::make_shared<Translate>(box2, Vec3(130,0,65));
+
+    objects->add(std::make_shared<ConstantMedium>(box1, 0.01, Color(0,0,0)));
+    objects->add(std::make_shared<ConstantMedium>(box2, 0.01, Color(1,1,1)));
+
+    return objects;
+}
+
 int main(void) {
 
     // World
@@ -176,8 +254,26 @@ int main(void) {
         break;
 
     case 5:
-    default:
+        world = simple_light();
         background = Color(0, 0, 0);
+        lookfrom = Point3(26, 3, 6);
+        lookat = Point3(0, 2, 0);
+        vfov = 20.0;
+        break;
+
+    case 6:
+        world = cornell_box();
+        background = Color(0,0,0);
+        lookfrom = Point3(278, 278, -800);
+        lookat = Point3(278, 278, 0);
+        vfov = 40.0;
+        break;
+    default:
+    case 7:
+        world = cornell_smoke();
+        lookfrom = Point3(278, 278, -800);
+        lookat = Point3(278, 278, 0);
+        vfov = 40.0;
         break;
     }
 

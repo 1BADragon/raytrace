@@ -6,5 +6,6 @@
 #include <materials/metal.h>
 #include <materials/lambertian.h>
 #include <materials/dielectric.h>
+#include <materials/diffuselight.h>
 
 #endif
