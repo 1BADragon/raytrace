@@ -28,7 +28,7 @@
 constexpr double ASPECT_RATIO = 1.;
 constexpr int IMAGE_WIDTH = 500;
 constexpr int IMAGE_HEIGHT = IMAGE_WIDTH / ASPECT_RATIO;
-constexpr int SAMPLES_PER_PIXEL = 100;
+constexpr int SAMPLES_PER_PIXEL = 10000;
 constexpr int MAX_DEPTH = 50;
 constexpr int N_THREADS = 4;
 
@@ -280,36 +280,53 @@ static std::shared_ptr<HittableList> final_scene() {
     return objects;
 }
 
-static std::vector<std::vector<Color>>
-worker(Camera *camera, std::shared_ptr<HittableList> world,
-       Color *background, int n)
+struct WorkerCtx {
+    std::shared_ptr<Camera> camera;
+    std::shared_ptr<HittableList> world;
+    Color background;
+    std::thread t;
+    std::shared_ptr<std::mutex> res_mut;
+    std::shared_ptr<std::vector<std::vector<Color>>> res;
+    std::shared_ptr<std::mutex> line_mut;
+    std::shared_ptr<int> next_line;
+};
+
+static void worker(std::shared_ptr<WorkerCtx> w)
 {
-    std::vector<std::vector<Color>> image_part;
+    std::vector<Color> row;
+    row.resize(IMAGE_WIDTH);
 
-    size_t to_do = IMAGE_HEIGHT / N_THREADS;
+    for(;;) {
 
-    int start = n * to_do;
-    int end = (n+1) * to_do - 1;
+        int j;
 
-    std::clog << "Thread " << n << "start: " << start << " end: " << end << std::endl;
-
-    image_part.resize(to_do);
-
-    for(int j = start; j <= end; ++j) {
-        image_part[j - start].resize(IMAGE_WIDTH);
+        {
+            std::lock_guard _(*w->line_mut);
+            j = *w->next_line;
+            if (j < 0) {
+                return;
+            }
+            (*w->next_line)--;
+            std::clog << "\rScanlines remaining: " << j << "   " << std::flush;
+        }
 
         for (int i = 0; i < IMAGE_WIDTH; ++i) {
             Color pixel_color;
             for (int s = 0; s < SAMPLES_PER_PIXEL; ++s) {
                 auto u = (i + random_double()) / (IMAGE_WIDTH - 1);
                 auto v = (j + random_double()) / (IMAGE_HEIGHT - 1);
-                Ray r = camera->get_ray(u, v);
-                pixel_color += ray_color(r, *background, world, MAX_DEPTH);
+                Ray r = w->camera->get_ray(u, v);
+                pixel_color += ray_color(r, w->background, w->world, MAX_DEPTH);
             }
-            image_part[j - start][i] = pixel_color;
+            row[i] = pixel_color;
         }
+
+        {
+            std::lock_guard _(*w->res_mut);
+            w->res->at(IMAGE_HEIGHT - (j + 1)) = row;
+        }
+
     }
-    return image_part;
 }
 
 int main(void) {
@@ -323,7 +340,7 @@ int main(void) {
     auto aperture = 0.0;
     Color background(0, 0, 0);
 
-    switch(4) {
+    switch(0) {
     case 1:
         world = random_scene();
         background = Color(.7, .8, 1.);
@@ -394,24 +411,43 @@ int main(void) {
     Vec3 vup(0, 1, 0);
     auto dist_to_focus = 10.0;
 
-    Camera camera(lookfrom, lookat, vup, vfov, ASPECT_RATIO, aperture, dist_to_focus, 0.0, 1.0);
+    auto camera = std::make_shared<Camera>(lookfrom, lookat, vup, vfov, ASPECT_RATIO, aperture, dist_to_focus, 0.0, 1.0);
 
-    std::vector<std::future<std::vector<std::vector<Color>>>> workers;
+    std::vector<std::shared_ptr<WorkerCtx>> workers;
+
+    auto image = std::make_shared<std::vector<std::vector<Color>>>();
+    image->resize(IMAGE_HEIGHT);
+    auto res_mut = std::make_shared<std::mutex>();
+    auto line_mut = std::make_shared<std::mutex>();
+    auto next_line = std::make_shared<int>(IMAGE_HEIGHT - 1);
+
 
     for (int i = 0; i < N_THREADS; ++i) {
-        auto thread = std::async(worker, &camera, world, &background, i);
-        workers.push_back(std::move(thread));
+        auto worker_ctx = std::make_shared<WorkerCtx>();
+        worker_ctx->camera = camera;
+        worker_ctx->world = world;
+        worker_ctx->background = background;
+        // worker->thread...
+        worker_ctx->res_mut = res_mut;
+        worker_ctx->res = image;
+        worker_ctx->line_mut = line_mut;
+        worker_ctx->next_line = next_line;
+
+        worker_ctx->t = std::thread(worker, worker_ctx);
+
+        workers.push_back(worker_ctx);
+    }
+
+    // wait for workers
+    for (auto &worker : workers) {
+        worker->t.join();
     }
 
     std::cout << "P3\n" << IMAGE_WIDTH << ' ' << IMAGE_HEIGHT << "\n255\n";
 
-    for (auto &worker : workers) {
-        auto ret = worker.get();
-
-        for (auto &r : ret) {
-            for (auto &color : r) {
-                write_color(std::cout, color, SAMPLES_PER_PIXEL);
-            }
+    for (auto &scanline : *image) {
+        for (auto &pixel : scanline) {
+            write_color(std::cout, pixel, SAMPLES_PER_PIXEL);
         }
     }
 
