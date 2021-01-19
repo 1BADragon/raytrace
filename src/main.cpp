@@ -28,7 +28,7 @@
 constexpr double ASPECT_RATIO = 1.;
 constexpr int IMAGE_WIDTH = 500;
 constexpr int IMAGE_HEIGHT = IMAGE_WIDTH / ASPECT_RATIO;
-constexpr int SAMPLES_PER_PIXEL = 50;
+constexpr int SAMPLES_PER_PIXEL = 10000;
 constexpr int MAX_DEPTH = 50;
 constexpr int N_THREADS = 4;
 
@@ -341,7 +341,7 @@ int main(void) {
     auto aperture = 0.0;
     Color background(0, 0, 0);
 
-    switch(4) {
+    switch(0) {
     case 1:
         world = random_scene();
         background = Color(.7, .8, 1.);
