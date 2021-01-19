@@ -1,3 +1,5 @@
+#include <random>
+#include <thread>
 #include <cstdlib>
 #include <common.h>
 
@@ -7,8 +9,11 @@ double degrees_to_radians(double degrees)
 }
 
 double random_double() {
+    static thread_local std::default_random_engine rng(std::hash<std::thread::id>()(std::this_thread::get_id()));
+
+
     // Returns a random real in [0,1).
-    return rand() / (RAND_MAX + 1.0);
+    return rng() / (RAND_MAX + 1.0);
 }
 
 double random_double(double min, double max) {
