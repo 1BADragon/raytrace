@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <bvhnode.h>
+#include <hittables/bvhnode.h>
 #include <hitrecord.h>
 
 BvhNode::BvhNode(const std::vector<std::shared_ptr<Hittable> > &src_objects, size_t start, size_t end, double time0, double time1)

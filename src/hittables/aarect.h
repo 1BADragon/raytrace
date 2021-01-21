@@ -4,7 +4,7 @@
 #include <memory>
 #include <materials/material.h>
 #include <common.h>
-#include <hittable.h>
+#include <hittables/hittable.h>
 
 class XYRect : public Hittable {
 public:

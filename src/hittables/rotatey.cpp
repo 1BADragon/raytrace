@@ -1,4 +1,4 @@
-#include <rotatey.h>
+#include <hittables/rotatey.h>
 #include <common.h>
 #include <hitrecord.h>
 

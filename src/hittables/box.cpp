@@ -1,4 +1,4 @@
-#include <box.h>
+#include <hittables/box.h>
 
 Box::Box(const Point3 &p0, const Point3 &p1, std::shared_ptr<Material> ptr)
 {

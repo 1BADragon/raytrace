@@ -1,6 +1,6 @@
 #include <cmath>
 #include <hitrecord.h>
-#include <sphere.h>
+#include <hittables/sphere.h>
 
 Sphere::Sphere(const Point3 &center, double r, std::shared_ptr<Material> m) :
     center0(center), center1(center), time0(0.), time1(0.),

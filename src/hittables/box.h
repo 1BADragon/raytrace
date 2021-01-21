@@ -2,8 +2,8 @@
 #define BOX_H
 
 #include <common.h>
-#include <aarect.h>
-#include <hittablelist.h>
+#include <hittables/aarect.h>
+#include <hittables/hittablelist.h>
 
 class Box : public Hittable
 {

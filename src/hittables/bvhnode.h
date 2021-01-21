@@ -5,8 +5,8 @@
 #include <vector>
 #include <ray.h>
 #include <common.h>
-#include <hittable.h>
-#include <hittablelist.h>
+#include <hittables/hittable.h>
+#include <hittables/hittablelist.h>
 
 class BvhNode : public Hittable
 {

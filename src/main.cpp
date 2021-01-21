@@ -10,19 +10,12 @@
 #include <color.h>
 #include <ray.h>
 #include <common.h>
-#include <hittable.h>
+#include <hittables.h>
 #include <hitrecord.h>
-#include <hittablelist.h>
-#include <sphere.h>
-#include <aarect.h>
-#include <box.h>
 #include <constantmedium.h>
 #include <camera.h>
 #include <materials.h>
 #include <textures.h>
-#include <rotatey.h>
-#include <translate.h>
-#include <bvhnode.h>
 
 // Some general constants
 constexpr double ASPECT_RATIO = 1.;

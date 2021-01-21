@@ -2,7 +2,7 @@
 #define SPHERE_H
 
 #include <memory>
-#include <hittable.h>
+#include <hittables/hittable.h>
 
 class Material;
 

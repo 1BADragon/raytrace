@@ -1,4 +1,4 @@
-#include <aarect.h>
+#include <hittables/aarect.h>
 #include <hitrecord.h>
 
 bool XYRect::hit(const Ray &r, double min, double max, HitRecord &rec) const

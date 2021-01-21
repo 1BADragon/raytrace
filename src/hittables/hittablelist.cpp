@@ -1,5 +1,5 @@
 #include <hitrecord.h>
-#include <hittablelist.h>
+#include <hittables/hittablelist.h>
 
 bool HittableList::hit(const Ray &r, double min, double max, HitRecord &rec) const
 {

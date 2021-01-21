@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <memory>
-#include <hittable.h>
+#include <hittables/hittable.h>
 
 class HittableList : public Hittable
 {

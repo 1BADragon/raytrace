@@ -2,7 +2,7 @@
 #define ROTATEY_H
 
 #include <memory>
-#include <hittable.h>
+#include <hittables/hittable.h>
 
 class RotateY : public Hittable
 {

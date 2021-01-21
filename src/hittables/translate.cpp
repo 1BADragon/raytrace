@@ -1,4 +1,4 @@
-#include <translate.h>
+#include <hittables/translate.h>
 #include <hitrecord.h>
 
 bool Translate::hit(const Ray &r, double min, double max, HitRecord &rec) const

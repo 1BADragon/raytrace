@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <common.h>
-#include <hittable.h>
+#include <hittables/hittable.h>
 #include <materials/material.h>
 #include <textures/texture.h>
 #include <materials/isotropic.h>

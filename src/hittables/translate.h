@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <vec3.h>
-#include <hittable.h>
+#include <hittables/hittable.h>
 
 class Translate : public Hittable
 {
