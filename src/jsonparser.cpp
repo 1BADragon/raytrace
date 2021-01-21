@@ -21,6 +21,10 @@ private:
     std::string _what;
 };
 
+using sbptr = std::shared_ptr<SceneBuilder>;
+
+static void begin_parsing(sbptr sb, cJSON *j);
+
 JsonParser::JsonParser()
 {
 
@@ -59,6 +63,12 @@ std::shared_ptr<Scene> JsonParser::build_from_string(const std::string &content)
         throw JsonParsingError(ss.str());
     }
 
+    begin_parsing(builder, j.get());
 
     return builder->scene();
+}
+
+static void begin_parsing(sbptr sb, cJSON *j)
+{
+
 }
