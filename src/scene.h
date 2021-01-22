@@ -5,6 +5,7 @@
 #include <memory>
 #include <hittables/hittablelist.h>
 #include <hittables/hittable.h>
+#include <camera.h>
 
 class Scene
 {
@@ -32,6 +33,7 @@ private:
     int _samples_per_pixel;
     int _max_depth;
     std::shared_ptr<HittableList> _world;
+    std::shared_ptr<Camera> _camera;
 };
 
 

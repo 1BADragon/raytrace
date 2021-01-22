@@ -323,7 +323,7 @@ static void worker(std::shared_ptr<WorkerCtx> w)
     }
 }
 
-int main(void) {
+int main(int argc, char **argv) {
 
     // World
     std::shared_ptr<HittableList> world;

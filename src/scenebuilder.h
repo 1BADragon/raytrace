@@ -17,6 +17,15 @@ class SceneBuilder
 public:
     SceneBuilder();
 
+    static std::shared_ptr<Texture> build_texture(std::shared_ptr<BuilderAttr> ba);
+    static std::shared_ptr<Material> build_material(std::shared_ptr<BuilderAttr> ba);
+    static std::shared_ptr<Hittable> build_hittable(std::shared_ptr<BuilderAttr> ba);
+
+    void set_aspect_ratio(std::shared_ptr<BuilderAttr> v);
+    void set_image_width(std::shared_ptr<BuilderAttr> v);
+    void set_samples_per_pixel(std::shared_ptr<BuilderAttr> v);
+    void set_max_depth(std::shared_ptr<BuilderAttr> v);
+
     std::shared_ptr<Scene> scene() const;
     bool have_texture (const std::string &name) const;
     bool have_material (const std::string &name) const;
@@ -49,9 +58,15 @@ class BuilderAttr
     };
 
 public:
-    using Item = std::variant<float, std::string,
-        std::vector<std::shared_ptr<BuilderAttr>>,
-        std::unordered_map<std::string, std::shared_ptr<BuilderAttr>>>;
+    using ItemVec = std::vector<std::shared_ptr<BuilderAttr>>;
+    using ItemMap = std::unordered_map<std::string, std::shared_ptr<BuilderAttr>>;
+    using Item = std::variant<double, std::string, ItemVec, ItemMap>;
+
+    static std::shared_ptr<BuilderAttr> number(double d);
+    static std::shared_ptr<BuilderAttr> number(int d);
+    static std::shared_ptr<BuilderAttr> string(const std::string &s);
+    static std::shared_ptr<BuilderAttr> object();
+    static std::shared_ptr<BuilderAttr> array();
 
     enum ItemType {
         NUMBER,
@@ -60,18 +75,28 @@ public:
         OBJECT
     };
 
-    ItemType get_type() const {
+    ItemType type() const {
         return static_cast<ItemType>(item.index());
     }
 
     int as_int() const;
-    float as_float() const;
+    double as_double() const;
     std::string as_string() const;
 
-    std::shared_ptr<BuilderAttr> operator[](size_t index) const;
-    std::shared_ptr<BuilderAttr> operator[](const std::string &key) const;
+    std::shared_ptr<BuilderAttr>& operator[](size_t index);
+    std::shared_ptr<BuilderAttr>& operator[](const std::string &key);
+
+    void push_new(std::shared_ptr<BuilderAttr> ba);
+
+    size_t n_children() const;
+    bool has_child(size_t index) const;
+    bool has_child(const std::string &key) const;
 
 private:
+    BuilderAttr(int i) : item(static_cast<double>(i)) {}
+    BuilderAttr(float f) : item(f) {}
+    BuilderAttr(const std::string &s) : item(s) {}
+
     Item item;
 };
 
