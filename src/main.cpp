@@ -284,6 +284,8 @@ static void worker(std::shared_ptr<WorkerCtx> w)
 {
     std::vector<Color> row;
     row.resize(w->scene->image_width());
+    const int image_width = w->scene->image_width();
+    const int image_height = w->scene->image_height();
 
     for(;;) {
         int j;
@@ -301,8 +303,8 @@ static void worker(std::shared_ptr<WorkerCtx> w)
         for (int i = 0; i < w->scene->image_width(); ++i) {
             Color pixel_color;
             for (int s = 0; s < w->scene->samples_per_pixel(); ++s) {
-                auto u = (i + random_double()) / (w->scene->image_width() - 1);
-                auto v = (j + random_double()) / (w->scene->image_height() - 1);
+                auto u = (i + random_double()) / (image_width - 1);
+                auto v = (j + random_double()) / (image_height - 1);
                 Ray r = w->scene->camera()->get_ray(u, v);
                 pixel_color += ray_color(r, w->scene->background(), w->scene->world(), w->scene->max_depth());
             }
@@ -311,7 +313,7 @@ static void worker(std::shared_ptr<WorkerCtx> w)
 
         {
             std::lock_guard _(*w->res_mut);
-            w->res->at(w->scene->image_height() - (j + 1)) = row;
+            w->res->at(image_height - (j + 1)) = row;
         }
 
     }
@@ -329,7 +331,10 @@ int main(int argc, char **argv)
 
     auto scene = jp.build_from_file(argv[1]);
 
-    std::cerr << "Background: " << scene->background() << std::endl;
+    std::cerr << "Image size: " << scene->image_width() << ", "
+              << scene->image_height() << std::endl;
+    std::cerr << "spp: " << scene->samples_per_pixel() << std::endl;
+    std::cerr << "max_depth: " << scene->max_depth() << std::endl;
 
 //    switch(0) {
 //    case 1:

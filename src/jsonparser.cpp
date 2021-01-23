@@ -5,6 +5,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <cjson/cJSON.h>
+#include <builderattr.h>
 #include <scenebuilder.h>
 #include <jsonparser.h>
 

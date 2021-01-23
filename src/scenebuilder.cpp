@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include <scenebuilder.h>
+#include <builderattr.h>
 #include <hittables.h>
 #include <textures.h>
 #include <materials.h>
@@ -35,7 +36,22 @@ SceneBuilder::SceneBuilder() :
 
 std::shared_ptr<Texture> SceneBuilder::build_texture(const std::shared_ptr<BuilderAttr> ba)
 {
-    return nullptr;
+    if (!ba->has_child("type")) {
+        throw SceneBuildingError("Textures required a \"type\" field");
+    }
+    const std::string type = ba->child("type")->as_string();
+
+    if (type == "solid_color") {
+        return build_solid_color(ba);
+    } else if (type == "checker") {
+        return build_checker(ba);
+    } else if (type == "noise") {
+        return build_noise(ba);
+    } else if (type == "image") {
+        return build_image(ba);
+    } else {
+        throw SceneBuildingError("Unsupported texture type: \"" + type + "\"");
+    }
 }
 
 std::shared_ptr<Material> SceneBuilder::build_material(const std::shared_ptr<BuilderAttr> ba)
@@ -81,7 +97,7 @@ void SceneBuilder::set_max_depth(std::shared_ptr<BuilderAttr> v)
         throw SceneBuildingError("Max depth needs to be a number");
     }
 
-    this->scene()->set_samples_per_pixel(v->as_int());
+    this->scene()->set_max_depth(v->as_int());
 }
 
 void SceneBuilder::set_background(const std::shared_ptr<BuilderAttr> v)
@@ -170,109 +186,48 @@ void SceneBuilder::add_object_to_scene(std::shared_ptr<Hittable> h)
     scene()->add_object(h);
 }
 
-std::shared_ptr<BuilderAttr> BuilderAttr::number(double d)
+std::shared_ptr<Texture> SceneBuilder::parse_texture(std::shared_ptr<BuilderAttr> ba)
 {
-    auto b = std::shared_ptr<BuilderAttr>(new BuilderAttr(d));
-    return b;
-}
-
-std::shared_ptr<BuilderAttr> BuilderAttr::number(int d)
-{
-    auto b = std::shared_ptr<BuilderAttr>(new BuilderAttr(d));
-    return b;
-}
-
-std::shared_ptr<BuilderAttr> BuilderAttr::string(const std::string &s)
-{
-    auto b = std::shared_ptr<BuilderAttr>(new BuilderAttr(s));
-    return b;
-}
-
-std::shared_ptr<BuilderAttr> BuilderAttr::object()
-{
-    auto b = std::shared_ptr<BuilderAttr>(new BuilderAttr(0));
-    b->item = ItemMap();
-    return b;
-}
-
-std::shared_ptr<BuilderAttr> BuilderAttr::array()
-{
-    auto b = std::shared_ptr<BuilderAttr>(new BuilderAttr(0));
-    b->item = ItemVec();
-    return b;
-}
-
-int BuilderAttr::as_int() const
-{
-    if (type() != NUMBER) {
-        throw SceneBuildingError("Error reading value: not a number");
+    switch (ba->type()) {
+    case BuilderAttr::STRING:
+        return this->texture(ba->as_string());
+    case BuilderAttr::ARRAY:
+        return build_solid_color(ba);
+    case BuilderAttr::OBJECT:
+        return build_texture(ba);
+    default:
+        throw SceneBuildingError("Invalid data for texture");
     }
-
-    return static_cast<int>(std::get<double>(item));
 }
 
-double BuilderAttr::as_double() const
+std::shared_ptr<Texture> SceneBuilder::build_solid_color(std::shared_ptr<BuilderAttr> ba)
 {
-    if (type() != NUMBER) {
-        throw SceneBuildingError("Error reading value: not a number");
-    }
-
-    return std::get<double>(item);
+    Color c = build_color(ba->child("value"));
+    return std::make_shared<SolidColor>(c.x(), c.y(), c.z());
 }
 
-std::string BuilderAttr::as_string() const
+std::shared_ptr<Texture> SceneBuilder::build_checker(std::shared_ptr<BuilderAttr> ba)
 {
-    if (type() != STRING) {
-        throw SceneBuildingError("Error reading value: not a string");
-    }
+    auto color1 = parse_texture(ba->child("color1"));
+    auto color2 = parse_texture(ba->child("color2"));
 
-    return std::get<std::string>(item);
+    return std::make_shared<CheckerTexture>(color1, color2);
 }
 
-std::shared_ptr<BuilderAttr> &BuilderAttr::operator [](size_t index)
+std::shared_ptr<Texture> SceneBuilder::build_noise(std::shared_ptr<BuilderAttr> ba)
 {
-    if (type() != ARRAY) {
-        throw SceneBuildingError("Error reading value: not an array");
-    }
+    double scale = ba->child("scale")->as_double();
 
-    return std::get<ItemVec>(item)[index];
+    return std::make_shared<NoiseTexture>(scale);
 }
 
-void BuilderAttr::push_new(std::shared_ptr<BuilderAttr> ba)
+std::shared_ptr<Texture> SceneBuilder::build_image(std::shared_ptr<BuilderAttr> ba)
 {
-    if (type() != ARRAY) {
-        throw SceneBuildingError("Pushing to a non array type");
-    }
+    std::string path = ba->child("path")->as_string();
 
-    std::get<ItemVec>(item).push_back(ba);
+    return std::make_shared<ImageTexture>(path);
 }
 
-std::shared_ptr<BuilderAttr> BuilderAttr::child(size_t index) const
-{
-    if (type() != ARRAY) {
-        throw SceneBuildingError("Attr not an array");
-    }
-
-    return std::get<ItemVec>(item).at(index);
-}
-
-std::shared_ptr<BuilderAttr> BuilderAttr::child(const std::string &key) const
-{
-    if (type() != OBJECT) {
-        throw SceneBuildingError("Error reading value: not an object");
-    }
-
-    return std::get<ItemMap>(item).at(key);
-}
-
-std::shared_ptr<BuilderAttr>& BuilderAttr::operator[](const std::string &key)
-{
-    if (type() != OBJECT) {
-        throw SceneBuildingError("Error reading value: not an object");
-    }
-
-    return std::get<ItemMap>(item)[key];
-}
 
 static Color build_color(std::shared_ptr<BuilderAttr> c)
 {
