@@ -30,6 +30,7 @@ static std::shared_ptr<Texture> parse_texture(sbptr sb, cJSON *j);
 static void parse_materials(sbptr sb, cJSON *j);
 static std::shared_ptr<Material> parse_material(sbptr sb, cJSON *j);
 static void parse_objects(sbptr sb, cJSON *j);
+static std::shared_ptr<Hittable> parse_object(sbptr sb, cJSON *j);
 
 static std::shared_ptr<BuilderAttr> build_attr(cJSON *j);
 
@@ -104,6 +105,12 @@ static void parse_scene_attrs(sbptr sb, cJSON *j)
 
     tmp = cJSON_GetObjectItem(j, "max_depth");
     sb->set_max_depth(build_attr(tmp));
+
+    tmp = cJSON_GetObjectItem(j, "background");
+    sb->set_background(build_attr(tmp));
+
+    tmp = cJSON_GetObjectItem(j, "camera");
+    sb->set_camera_attrs(build_attr(tmp));
 }
 
 static std::shared_ptr<BuilderAttr> build_attr(cJSON *j)
@@ -127,7 +134,7 @@ static std::shared_ptr<BuilderAttr> build_attr(cJSON *j)
         cJSON *chld;
         auto obj = BuilderAttr::object();
         cJSON_ArrayForEach(chld, j) {
-            std::string key(cJSON_GetStringValue(chld));
+            std::string key(chld->string);
             (*obj)[key] = build_attr(cJSON_GetObjectItem(j, key.c_str()));
         }
         return obj;
@@ -174,5 +181,17 @@ static std::shared_ptr<Material> parse_material(sbptr sb, cJSON *j)
 
 static void parse_objects(sbptr sb, cJSON *j)
 {
+    cJSON *chld = nullptr;
+    cJSON *objects = cJSON_GetObjectItem(j, "objects");
 
+    cJSON_ArrayForEach(chld, objects) {
+        auto obj = parse_object(sb, chld);
+
+        sb->add_object_to_scene(obj);
+    }
+}
+
+static std::shared_ptr<Hittable> parse_object(sbptr sb, cJSON *j)
+{
+    return sb->build_hittable(build_attr(j));
 }

@@ -34,4 +34,5 @@ target_link_libraries(${PROJECT_NAME} stb ${CJSON_PATH} pthread)
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
     CXX_STANDARD 17
-    C_STANDARD 11)
+    C_STANDARD 11
+    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})

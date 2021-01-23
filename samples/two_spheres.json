@@ -1,0 +1,17 @@
+{
+    "aspect_ratio": 1.0,
+    "image_width": 800,
+    "samples_per_pixel": 100,
+    "max_depth": 50,
+    "background": [0.7, 0.8, 1.0],
+    "camera": {
+        "lookfrom": [13, 2, 3],
+        "lookat": [0, 0, 0],
+        "vup": [0, 1, 0],
+        "vfov": 40.0,
+        "aperture": 0.0,
+        "focus_dist": 10.0,
+        "time0": 0,
+        "time1": 0
+    }
+}

@@ -1,10 +1,10 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-
 #include <memory>
 #include <hittables/hittablelist.h>
 #include <hittables/hittable.h>
+#include <color.h>
 #include <camera.h>
 
 class Scene
@@ -18,6 +18,8 @@ public:
     void set_image_width(int v) { _image_width = v; }
     void set_samples_per_pixel(int s) { _samples_per_pixel = s; }
     void set_max_depth(int d) { _max_depth = d; }
+    void set_background(Color c) { _background = c; }
+    void set_camera(std::shared_ptr<Camera> c) { _camera = c; }
 
     double aspect_ratio() const { return _aspect_ratio; }
     int image_width() const { return _image_width; }
@@ -26,21 +28,18 @@ public:
     int max_depth() const { return _max_depth; }
 
     std::shared_ptr<HittableList> world() const { return _world; }
+    std::shared_ptr<Camera> camera() const { return _camera; }
+
+    Color background() { return _background; }
 
 private:
     double _aspect_ratio;
     int _image_width;
     int _samples_per_pixel;
     int _max_depth;
+    Color _background;
     std::shared_ptr<HittableList> _world;
     std::shared_ptr<Camera> _camera;
 };
-
-
-constexpr double ASPECT_RATIO = 1.;
-constexpr int IMAGE_WIDTH = 500;
-constexpr int IMAGE_HEIGHT = IMAGE_WIDTH / ASPECT_RATIO;
-constexpr int SAMPLES_PER_PIXEL = 10000;
-constexpr int MAX_DEPTH = 50;
 
 #endif // SCENE_H

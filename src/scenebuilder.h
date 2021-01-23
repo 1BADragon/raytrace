@@ -9,6 +9,7 @@
 #include <scene.h>
 #include <textures/texture.h>
 #include <materials/material.h>
+#include <hittables/hittable.h>
 
 class BuilderAttr;
 
@@ -17,14 +18,16 @@ class SceneBuilder
 public:
     SceneBuilder();
 
-    static std::shared_ptr<Texture> build_texture(std::shared_ptr<BuilderAttr> ba);
-    static std::shared_ptr<Material> build_material(std::shared_ptr<BuilderAttr> ba);
-    static std::shared_ptr<Hittable> build_hittable(std::shared_ptr<BuilderAttr> ba);
+    static std::shared_ptr<Texture> build_texture(const std::shared_ptr<BuilderAttr> ba);
+    static std::shared_ptr<Material> build_material(const std::shared_ptr<BuilderAttr> ba);
+    static std::shared_ptr<Hittable> build_hittable(const std::shared_ptr<BuilderAttr> ba);
 
-    void set_aspect_ratio(std::shared_ptr<BuilderAttr> v);
-    void set_image_width(std::shared_ptr<BuilderAttr> v);
-    void set_samples_per_pixel(std::shared_ptr<BuilderAttr> v);
-    void set_max_depth(std::shared_ptr<BuilderAttr> v);
+    void set_aspect_ratio(const std::shared_ptr<BuilderAttr> v);
+    void set_image_width(const std::shared_ptr<BuilderAttr> v);
+    void set_samples_per_pixel(const std::shared_ptr<BuilderAttr> v);
+    void set_max_depth(const std::shared_ptr<BuilderAttr> v);
+    void set_background(const std::shared_ptr<BuilderAttr> v);
+    void set_camera_attrs(const std::shared_ptr<BuilderAttr> v);
 
     std::shared_ptr<Scene> scene() const;
     bool have_texture (const std::string &name) const;
@@ -35,6 +38,8 @@ public:
 
     std::shared_ptr<Texture> texture(const std::string &name);
     std::shared_ptr<Material> material(const std::string &name);
+
+    void add_object_to_scene(std::shared_ptr<Hittable> h);
 
 private:
     std::shared_ptr<Scene> _scene;
@@ -92,9 +97,12 @@ public:
     bool has_child(size_t index) const;
     bool has_child(const std::string &key) const;
 
+    std::shared_ptr<BuilderAttr> child(size_t index) const;
+    std::shared_ptr<BuilderAttr> child(const std::string &key) const;
+
 private:
     BuilderAttr(int i) : item(static_cast<double>(i)) {}
-    BuilderAttr(float f) : item(f) {}
+    BuilderAttr(double f) : item(f) {}
     BuilderAttr(const std::string &s) : item(s) {}
 
     Item item;
