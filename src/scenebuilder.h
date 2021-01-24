@@ -48,11 +48,19 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Material>> _materials;
 
     std::shared_ptr<Texture> parse_texture(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Material> parse_material(std::shared_ptr<BuilderAttr> ba);
 
     std::shared_ptr<Texture> build_solid_color(std::shared_ptr<BuilderAttr> ba);
     std::shared_ptr<Texture> build_checker(std::shared_ptr<BuilderAttr> ba);
     std::shared_ptr<Texture> build_noise(std::shared_ptr<BuilderAttr> ba);
     std::shared_ptr<Texture> build_image(std::shared_ptr<BuilderAttr> ba);
+
+    std::shared_ptr<Material> build_metal(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Material> build_lambertain(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Material> build_dielectric(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Material> build_diffuselight(std::shared_ptr<BuilderAttr> ba);
+
+    std::shared_ptr<Hittable> build_sphere(std::shared_ptr<BuilderAttr> ba);
 };
 
 
