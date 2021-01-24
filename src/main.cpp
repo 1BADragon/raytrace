@@ -12,7 +12,6 @@
 #include <common.h>
 #include <hittables.h>
 #include <hitrecord.h>
-#include <constantmedium.h>
 #include <camera.h>
 #include <materials.h>
 #include <textures.h>
@@ -409,7 +408,6 @@ int main(int argc, char **argv)
     auto res_mut = std::make_shared<std::mutex>();
     auto line_mut = std::make_shared<std::mutex>();
     auto next_line = std::make_shared<int>(scene->image_height() - 1);
-
 
     for (int i = 0; i < N_THREADS; ++i) {
         auto worker_ctx = std::make_shared<WorkerCtx>();

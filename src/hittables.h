@@ -9,5 +9,6 @@
 #include <hittables/rotatey.h>
 #include <hittables/sphere.h>
 #include <hittables/translate.h>
+#include <hittables/constantmedium.h>
 
 #endif

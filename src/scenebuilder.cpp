@@ -83,6 +83,10 @@ std::shared_ptr<Hittable> SceneBuilder::build_hittable(const std::shared_ptr<Bui
 
     if (type == "sphere") {
         return build_sphere(ba);
+    } else if (type == "box") {
+        return build_box(ba);
+    } else if (type == "constant_medium") {
+        return build_constant_medium(ba);
     } else {
         throw SceneBuildingError("Unknown object type: \"" + type + '"');
     }
@@ -307,6 +311,24 @@ std::shared_ptr<Hittable> SceneBuilder::build_sphere(std::shared_ptr<BuilderAttr
 
         return std::make_shared<Sphere>(center, r, m);
     }
+}
+
+std::shared_ptr<Hittable> SceneBuilder::build_box(std::shared_ptr<BuilderAttr> ba)
+{
+    Point3 p0 = build_point(ba->child("point0"));
+    Point3 p1 = build_point(ba->child("point1"));
+    auto mat = parse_material(ba->child("material"));
+
+    return std::make_shared<Box>(p0, p1, mat);
+}
+
+std::shared_ptr<Hittable> SceneBuilder::build_constant_medium(std::shared_ptr<BuilderAttr> ba)
+{
+    auto obj = build_hittable(ba->child("object"));
+    double d = ba->child("density")->as_double();
+    auto mat = parse_texture(ba->child("texture"));
+
+    return std::make_shared<ConstantMedium>(obj, d, mat);
 }
 
 static Color build_color(std::shared_ptr<BuilderAttr> c)

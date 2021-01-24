@@ -1,4 +1,4 @@
-#include <constantmedium.h>
+#include <hittables/constantmedium.h>
 #include <hitrecord.h>
 
 bool ConstantMedium::hit(const Ray &r, double min, double max, HitRecord &rec) const

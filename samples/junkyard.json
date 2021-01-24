@@ -1,0 +1,75 @@
+{
+    "aspect_ratio": 1.77777,
+    "image_width": 1000,
+    "samples_per_pixel": 100,
+    "max_depth": 50,
+    "background": [0.7, 0.8, 1.0],
+    "camera": {
+        "lookfrom": [20, 7, 3],
+        "lookat": [0, 0, 0],
+        "vup": [0, 1, 0],
+        "vfov": 40.0,
+        "aperture": 0.0,
+        "focus_dist": 10.0,
+        "time0": 0,
+        "time1": 0
+    },
+
+    "materials": {
+        "mirror": {
+            "type": "metal",
+            "color": [0.7, 0.7, 0.7],
+            "fuzz": 0.0
+        }
+    },
+
+    "objects": [
+        {
+            "type": "sphere",
+            "center": [0, -1000, 0],
+            "radius": 1000,
+            "material": {
+                "type": "lambertian",
+                "texture": [0.3, 0.6, 0.2]
+            }
+        },
+        {
+            "type": "sphere",
+            "center": [0, 2.0, 0],
+            "radius": 2.0,
+            "material": "mirror"
+        },
+        {
+            "type": "sphere",
+            "center": [3, 0.5, 3],
+            "radius": 0.5,
+            "material": {
+                "type": "lambertian",
+                "texture": [0.7, 0.1, 0.1]
+            }
+        },
+        {
+            "type": "box",
+            "point0": [5, 0, -3],
+            "point1": [6, 6, -2],
+            "material": {
+                "type": "lambertian",
+                "texture": [0.2, 0.2, 0.8]
+            }
+        },
+        {
+            "type": "constant_medium",
+            "density": 0.3,
+            "texture": [1.0, 1.0, 1.0],
+            "object": {
+                "type": "sphere",
+                "center": [3, 2.0, 9],
+                "radius": 2.0,
+                "material": {
+                    "type": "lambertian",
+                    "texture": [0.6, 0.6, 0.6]
+                }
+            }
+        }
+    ]
+}

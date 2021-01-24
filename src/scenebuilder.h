@@ -61,6 +61,8 @@ private:
     std::shared_ptr<Material> build_diffuselight(std::shared_ptr<BuilderAttr> ba);
 
     std::shared_ptr<Hittable> build_sphere(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Hittable> build_box(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Hittable> build_constant_medium(std::shared_ptr<BuilderAttr> ba);
 };
 
 

@@ -150,9 +150,9 @@ static void parse_textures(sbptr sb, cJSON *j)
     cJSON *textures = cJSON_GetObjectItem(j, "textures");
 
     cJSON_ArrayForEach(chld, textures) {
-        std::string key = cJSON_GetStringValue(chld);
+        std::string key = chld->string;
 
-        auto texture = parse_texture(sb, chld->child);
+        auto texture = parse_texture(sb, cJSON_GetObjectItem(textures, key.c_str()));
         sb->insert_texture(key, texture);
     }
 }
@@ -168,9 +168,9 @@ static void parse_materials(sbptr sb, cJSON *j)
     cJSON *materials = cJSON_GetObjectItem(j, "materials");
 
     cJSON_ArrayForEach(chld, materials) {
-        std::string key = cJSON_GetStringValue(chld);
+        std::string key = chld->string;
 
-        auto material = parse_material(sb, chld->child);
+        auto material = parse_material(sb, cJSON_GetObjectItem(materials, key.c_str()));
         sb->insert_material(key, material);
     }
 }
