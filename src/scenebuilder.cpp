@@ -87,6 +87,16 @@ std::shared_ptr<Hittable> SceneBuilder::build_hittable(const std::shared_ptr<Bui
         return build_box(ba);
     } else if (type == "constant_medium") {
         return build_constant_medium(ba);
+    } else if (type == "xy_rect") {
+        return build_xy_rect(ba);
+    } else if (type == "xz_rect") {
+        return build_xz_rect(ba);
+    } else if (type == "yz_rect") {
+        return build_yz_rect(ba);
+    } else if (type == "rotatey") {
+        return build_rotatey(ba);
+    } else if (type == "translate") {
+        return build_translate(ba);
     } else {
         throw SceneBuildingError("Unknown object type: \"" + type + '"');
     }
@@ -329,6 +339,58 @@ std::shared_ptr<Hittable> SceneBuilder::build_constant_medium(std::shared_ptr<Bu
     auto mat = parse_texture(ba->child("texture"));
 
     return std::make_shared<ConstantMedium>(obj, d, mat);
+}
+
+std::shared_ptr<Hittable> SceneBuilder::build_xy_rect(std::shared_ptr<BuilderAttr> ba)
+{
+    return std::make_shared<XYRect>(
+                ba->child("x0")->as_double(),
+                ba->child("x1")->as_double(),
+                ba->child("y0")->as_double(),
+                ba->child("y1")->as_double(),
+                ba->child("k")->as_double(),
+                parse_material(ba->child("material"))
+                );
+}
+
+std::shared_ptr<Hittable> SceneBuilder::build_xz_rect(std::shared_ptr<BuilderAttr> ba)
+{
+    return std::make_shared<XZRect>(
+                ba->child("x0")->as_double(),
+                ba->child("x1")->as_double(),
+                ba->child("z0")->as_double(),
+                ba->child("z1")->as_double(),
+                ba->child("k")->as_double(),
+                parse_material(ba->child("material"))
+                );
+}
+
+std::shared_ptr<Hittable> SceneBuilder::build_yz_rect(std::shared_ptr<BuilderAttr> ba)
+{
+    return std::make_shared<YZRect>(
+                ba->child("y0")->as_double(),
+                ba->child("y1")->as_double(),
+                ba->child("z0")->as_double(),
+                ba->child("z1")->as_double(),
+                ba->child("k")->as_double(),
+                parse_material(ba->child("material"))
+                );
+}
+
+std::shared_ptr<Hittable> SceneBuilder::build_rotatey(std::shared_ptr<BuilderAttr> ba)
+{
+    return std::make_shared<RotateY>(
+                build_hittable(ba->child("object")),
+                ba->child("angle")->as_double()
+                );
+}
+
+std::shared_ptr<Hittable> SceneBuilder::build_translate(std::shared_ptr<BuilderAttr> ba)
+{
+    return std::make_shared<Translate>(
+                build_hittable(ba->child("object")),
+                build_vec(ba->child("vec"))
+                );
 }
 
 static Color build_color(std::shared_ptr<BuilderAttr> c)

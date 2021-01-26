@@ -63,6 +63,11 @@ private:
     std::shared_ptr<Hittable> build_sphere(std::shared_ptr<BuilderAttr> ba);
     std::shared_ptr<Hittable> build_box(std::shared_ptr<BuilderAttr> ba);
     std::shared_ptr<Hittable> build_constant_medium(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Hittable> build_xy_rect(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Hittable> build_xz_rect(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Hittable> build_yz_rect(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Hittable> build_rotatey(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Hittable> build_translate(std::shared_ptr<BuilderAttr> ba);
 };
 
 
