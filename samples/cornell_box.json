@@ -109,16 +109,13 @@
     ],
     "lights": [
         {
-            "type": "flipface",
-            "object": {
-                "type": "xz_rect",
-                "x0": 213,
-                "x1": 343,
-                "z0": 227,
-                "z1": 332,
-                "k": 554,
-                "material": "none"
-            }
+            "type": "xz_rect",
+            "x0": 213,
+            "x1": 343,
+            "z0": 227,
+            "z1": 332,
+            "k": 554,
+            "material": "none"
         }
     ]
 }
