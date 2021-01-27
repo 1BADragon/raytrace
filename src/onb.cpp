@@ -3,7 +3,7 @@
 
 Vec3 Onb::local(double a, double b, double c) const
 {
-    return a*u() + b*v() + c*v();
+    return a*u() + b*v() + c*w();
 }
 
 Vec3 Onb::local(const Vec3 &a) const
