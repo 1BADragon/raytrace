@@ -9,7 +9,8 @@ set(srcs
     src/main.cpp src/vec3.cpp src/common.cpp src/color.cpp
     src/hitrecord.cpp src/ray.cpp src/camera.cpp src/stb.cpp
     src/aabb.cpp src/jsonparser.cpp src/scene.cpp
-    src/scenebuilder.cpp src/builderattr.cpp
+    src/scenebuilder.cpp src/builderattr.cpp src/onb.cpp
+    src/cosinepdf.cpp src/hittablepdf.cpp
 
     src/textures/solidcolor.cpp src/textures/checkertexture.cpp
     src/textures/perlin.cpp src/textures/imagetexture.cpp
@@ -22,7 +23,7 @@ set(srcs
     src/hittables/bvhnode.cpp src/hittables/rotatey.cpp
     src/hittables/sphere.cpp src/hittables/box.cpp
     src/hittables/aarect.cpp src/hittables/hittablelist.cpp
-    src/hittables/translate.cpp src/hittables/constantmedium.cpp
+    src/hittables/translate.cpp src/hittables/constantmedium.cpp src/hittables/flipface.cpp
     )
 
 add_executable(${PROJECT_NAME} ${srcs})

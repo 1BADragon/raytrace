@@ -36,3 +36,16 @@ int random_int(int min, int max)
 {
     return static_cast<int>(random_double(min, max+1));
 }
+
+Vec3 random_cosine_direction()
+{
+    auto r1 = random_double();
+    auto r2 = random_double();
+    auto z = std::sqrt(1 - r2);
+
+    auto phi = 2*pi*r1;
+    auto x = std::cos(phi)*std::sqrt(r2);
+    auto y = std::sin(phi)*std::sqrt(r2);
+
+    return Vec3(x, y, z);
+}

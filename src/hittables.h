@@ -10,5 +10,6 @@
 #include <hittables/sphere.h>
 #include <hittables/translate.h>
 #include <hittables/constantmedium.h>
+#include <hittables/flipface.h>
 
 #endif

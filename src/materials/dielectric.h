@@ -8,7 +8,7 @@ class Dielectric : public Material
 public:
     Dielectric(double index_of_refraction): ir(index_of_refraction) {}
 
-    virtual bool scatter(const Ray &r_in, const HitRecord &rec, Color &attenuation, Ray &scattered) const override;
+    virtual bool scatter(const Ray &r_in, const HitRecord &rec, Color &attenuation, Ray &scattered) const;
 
 private:
     double ir;

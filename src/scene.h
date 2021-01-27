@@ -10,9 +10,11 @@
 class Scene
 {
 public:
-    Scene() : _world(std::make_shared<HittableList>()) {}
+    Scene() : _world(std::make_shared<HittableList>()),
+    _lights(std::make_shared<HittableList>()){}
 
     void add_object(std::shared_ptr<Hittable> h) { _world->add(h); }
+    void add_light(std::shared_ptr<Hittable> l) { _lights->add(l); }
 
     void set_aspect_ratio(double r) { _aspect_ratio = r; }
     void set_image_width(int v) { _image_width = v; }
@@ -28,6 +30,7 @@ public:
     int max_depth() const { return _max_depth; }
 
     std::shared_ptr<HittableList> world() const { return _world; }
+    std::shared_ptr<HittableList> lights() const { return _lights; }
     std::shared_ptr<Camera> camera() const { return _camera; }
 
     Color background() { return _background; }
@@ -39,6 +42,7 @@ private:
     int _max_depth;
     Color _background;
     std::shared_ptr<HittableList> _world;
+    std::shared_ptr<HittableList> _lights;
     std::shared_ptr<Camera> _camera;
 };
 

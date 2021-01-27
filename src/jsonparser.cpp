@@ -32,6 +32,7 @@ static void parse_materials(sbptr sb, cJSON *j);
 static std::shared_ptr<Material> parse_material(sbptr sb, cJSON *j);
 static void parse_objects(sbptr sb, cJSON *j);
 static std::shared_ptr<Hittable> parse_object(sbptr sb, cJSON *j);
+static void parse_lights(sbptr sb, cJSON *j);
 
 static std::shared_ptr<BuilderAttr> build_attr(cJSON *j);
 
@@ -89,6 +90,7 @@ static void begin_parsing(sbptr sb, cJSON *j)
     parse_textures(sb, j);
     parse_materials(sb, j);
     parse_objects(sb, j);
+    parse_lights(sb, j);
 }
 
 static void parse_scene_attrs(sbptr sb, cJSON *j)
@@ -195,4 +197,16 @@ static void parse_objects(sbptr sb, cJSON *j)
 static std::shared_ptr<Hittable> parse_object(sbptr sb, cJSON *j)
 {
     return sb->build_hittable(build_attr(j));
+}
+
+static void parse_lights(sbptr sb, cJSON *j)
+{
+    cJSON *chld = nullptr;
+    cJSON *lights = cJSON_GetObjectItem(j, "lights");
+
+    cJSON_ArrayForEach(chld, lights) {
+        auto light = parse_object(sb, chld);
+
+        sb->add_light_to_scene(light);
+    }
 }

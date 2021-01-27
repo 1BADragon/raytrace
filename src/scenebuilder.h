@@ -40,6 +40,7 @@ public:
     std::shared_ptr<Material> material(const std::string &name);
 
     void add_object_to_scene(std::shared_ptr<Hittable> h);
+    void add_light_to_scene(std::shared_ptr<Hittable> l);
 
 private:
     std::shared_ptr<Scene> _scene;
@@ -68,6 +69,7 @@ private:
     std::shared_ptr<Hittable> build_yz_rect(std::shared_ptr<BuilderAttr> ba);
     std::shared_ptr<Hittable> build_rotatey(std::shared_ptr<BuilderAttr> ba);
     std::shared_ptr<Hittable> build_translate(std::shared_ptr<BuilderAttr> ba);
+    std::shared_ptr<Hittable> build_flipface(std::shared_ptr<BuilderAttr> ba);
 };
 
 

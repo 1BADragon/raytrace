@@ -19,6 +19,8 @@ public:
 
     const std::vector<std::shared_ptr<Hittable>>& objects() const;
 
+    size_t n_objects() const { return _objects.size(); }
+
 private:
     std::vector<std::shared_ptr<Hittable>> _objects;
 };

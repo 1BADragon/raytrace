@@ -1,7 +1,7 @@
 {
     "aspect_ratio": 1.0,
     "image_width": 1000,
-    "samples_per_pixel": 100,
+    "samples_per_pixel": 10,
     "max_depth": 50,
     "background": [0, 0, 0],
     "camera": {
@@ -50,15 +50,6 @@
             "z1": 555,
             "k" : 0,
             "material": "red"
-        },
-        {
-            "type": "xz_rect",
-            "x0": 213,
-            "x1": 343,
-            "z0": 227,
-            "z1": 332,
-            "k": 554,
-            "material": "light"
         },
         {
             "type": "xz_rect",
@@ -113,6 +104,20 @@
                     "point1": [165, 165, 165],
                     "material": "white"
                 }
+            }
+        }
+    ],
+    "lights": [
+        {
+            "type": "flipface",
+            "object": {
+                "type": "xz_rect",
+                "x0": 213,
+                "x1": 343,
+                "z0": 227,
+                "z1": 332,
+                "k": 554,
+                "material": "none"
             }
         }
     ]
