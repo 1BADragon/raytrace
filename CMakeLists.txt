@@ -30,10 +30,10 @@ set(srcs
     )
 
 add_executable(${PROJECT_NAME} ${srcs})
-target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -flto -rdynamic)
+target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -flto -rdynamic -fsanitize=address)
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 target_link_options(${PROJECT_NAME} PUBLIC -rdynamic -flto)
-target_link_libraries(${PROJECT_NAME} stb cjson pthread dl)
+target_link_libraries(${PROJECT_NAME} stb cjson pthread dl asan)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES

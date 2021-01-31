@@ -47,9 +47,13 @@ static Color ray_color(const Ray &r, const Color &background,
     if (!rec.mat->scatter(r, rec, albedo, scattered, pdf_val)) {
         return emitted;
     }
-    HittablePdf light_pdf(lights, rec.p);
-    scattered = Ray(rec.p, light_pdf.generate(), r.time());
-    pdf_val = light_pdf.value(scattered.direction());
+//    HittablePdf light_pdf(lights, rec.p);
+//    scattered = Ray(rec.p, light_pdf.generate(), r.time());
+//    pdf_val = light_pdf.value(scattered.direction());
+
+    CosinePdf p(rec.normal);
+    scattered = Ray(rec.p, p.generate(), r.time());
+    pdf_val = p.value(scattered.direction());
 
     return emitted +
             albedo * rec.mat->scattering_pdf(r, rec, scattered) *
@@ -120,7 +124,7 @@ static std::shared_ptr<Scene> load_scene_from_args(std::vector<std::string> &arg
         JsonParser j;
         return j.build_from_file(file);
     } else if (type == "--so") {
-        void *handle = dlopen(file.c_str(), RTLD_LOCAL | RTLD_NOW);
+        void *handle = dlopen(file.c_str(), RTLD_LOCAL | RTLD_NOW | RTLD_NODELETE);
         if (!handle) {
             std::cerr << "Error opening " << file << ": " << dlerror() << std::endl;
             return nullptr;

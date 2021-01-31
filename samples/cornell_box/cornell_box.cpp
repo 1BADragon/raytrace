@@ -8,7 +8,7 @@ BUILD_SCENE {
 
     scene->set_aspect_ratio(1.0 / 1.0);
     scene->set_image_width(600);
-    scene->set_samples_per_pixel(10);
+    scene->set_samples_per_pixel(50);
     scene->set_max_depth(50);
     scene->set_background(Color(0.0, 0.0, 0.0));
 
