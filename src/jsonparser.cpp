@@ -198,15 +198,18 @@ static std::shared_ptr<Hittable> parse_object(sbptr sb, cJSON *j)
 {
     return sb->build_hittable(build_attr(j));
 }
-
+#include <hittables/aarect.h>
 static void parse_lights(sbptr sb, cJSON *j)
 {
     cJSON *chld = nullptr;
     cJSON *lights = cJSON_GetObjectItem(j, "lights");
 
-    cJSON_ArrayForEach(chld, lights) {
-        auto light = parse_object(sb, chld);
+    auto light = std::make_shared<XZRect>(213, 343, 227, 332, 554, std::shared_ptr<Material>());
 
-        sb->add_light_to_scene(light);
-    }
+    sb->add_light_to_scene(light);
+//    cJSON_ArrayForEach(chld, lights) {
+//        auto light = parse_object(sb, chld);
+
+//        sb->add_light_to_scene(light);
+//    }
 }

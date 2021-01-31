@@ -5,6 +5,8 @@ find_library(CJSON_PATH cjson REQUIRED)
 
 add_subdirectory(deps)
 
+set(RAYTRACE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/src)
+
 set(srcs
     src/main.cpp src/vec3.cpp src/common.cpp src/color.cpp
     src/hitrecord.cpp src/ray.cpp src/camera.cpp src/stb.cpp
@@ -37,3 +39,6 @@ set_target_properties(${PROJECT_NAME}
     CXX_STANDARD 17
     C_STANDARD 11
     RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+
+add_subdirectory(samples)
