@@ -204,12 +204,9 @@ static void parse_lights(sbptr sb, cJSON *j)
     cJSON *chld = nullptr;
     cJSON *lights = cJSON_GetObjectItem(j, "lights");
 
-    auto light = std::make_shared<XZRect>(213, 343, 227, 332, 554, std::shared_ptr<Material>());
+    cJSON_ArrayForEach(chld, lights) {
+        auto light = parse_object(sb, chld);
 
-    sb->add_light_to_scene(light);
-//    cJSON_ArrayForEach(chld, lights) {
-//        auto light = parse_object(sb, chld);
-
-//        sb->add_light_to_scene(light);
-//    }
+        sb->add_light_to_scene(light);
+    }
 }

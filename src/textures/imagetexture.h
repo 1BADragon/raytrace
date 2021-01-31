@@ -6,7 +6,6 @@
 #include <string>
 
 #include <common.h>
-#include <stb_image.h>
 #include <textures/texture.h>
 #include <textures/perlin.h>
 

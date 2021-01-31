@@ -29,10 +29,10 @@ set(srcs
     )
 
 add_executable(${PROJECT_NAME} ${srcs})
-target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -flto)
+target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -flto -rdynamic)
 target_include_directories(${PROJECT_NAME} PUBLIC src)
-target_link_options(${PROJECT_NAME} PUBLIC -flto)
-target_link_libraries(${PROJECT_NAME} stb ${CJSON_PATH} pthread)
+target_link_options(${PROJECT_NAME} PUBLIC -rdynamic -flto)
+target_link_libraries(${PROJECT_NAME} stb ${CJSON_PATH} pthread dl)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES

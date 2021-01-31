@@ -5,6 +5,7 @@
 #include <atomic>
 #include <future>
 #include <assert.h>
+#include <dlfcn.h>
 
 #include <vec3.h>
 #include <color.h>
@@ -104,17 +105,49 @@ static void worker(std::shared_ptr<WorkerCtx> w)
     }
 }
 
-int main(int argc, char **argv)
+static std::shared_ptr<Scene> load_scene_from_args(std::vector<std::string> &args)
 {
-
-    if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " <scene file>";
-        return 1;
+    // TODO: Implement an argument parser
+    if (args.size() < 3) {
+        std::cerr << "Invalid number of arguments" << std::endl;
+        return nullptr;
     }
 
-    JsonParser jp;
+    std::string type = args[1];
+    std::string file = args[2];
 
-    auto scene = jp.build_from_file(argv[1]);
+    if (type == "--json") {
+        JsonParser j;
+        return j.build_from_file(file);
+    } else if (type == "--so") {
+        void *handle = dlopen(file.c_str(), RTLD_LOCAL | RTLD_NOW);
+        if (!handle) {
+            std::cerr << "Error opening " << file << ": " << dlerror() << std::endl;
+            return nullptr;
+        }
+        auto build_scene = reinterpret_cast<Scene*(*)()>(dlsym(handle, "build_scene"));
+        if (build_scene == nullptr) {
+            std::cerr << "Unable to locate build_scene()" << std::endl;
+            return nullptr;
+        }
+        std::shared_ptr<Scene> scene(build_scene());
+        dlclose(handle);
+        return scene;
+    }
+
+    std::cerr << "Unknown option: " << type << std::endl;
+    return nullptr;
+}
+
+int main(int argc, char **argv)
+{
+    std::vector<std::string> args(argv, argv+argc);
+
+    auto scene = load_scene_from_args(args);
+
+    if (!scene) {
+        return 1;
+    }
 
     std::cerr << "Image size: " << scene->image_width() << ", "
               << scene->image_height() << std::endl;
