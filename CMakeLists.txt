@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(raytrace)
 
-find_library(CJSON_PATH cjson REQUIRED)
+set(DEPS_INSTALL_DIR ${CMAKE_BINARY_DIR}/deps_installs)
+file(MAKE_DIRECTORY ${DEPS_INSTALL_DIR})
 
 add_subdirectory(deps)
 
