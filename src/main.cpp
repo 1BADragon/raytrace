@@ -1,64 +1,16 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
-#include <optional>
-#include <atomic>
-#include <future>
+#include <vector>
 #include <assert.h>
 #include <dlfcn.h>
 
-#include <vec3.h>
-#include <color.h>
-#include <ray.h>
-#include <common.h>
-#include <hittables.h>
-#include <hitrecord.h>
-#include <camera.h>
-#include <materials.h>
-#include <textures.h>
 #include <scene.h>
+#include <color.h>
 #include <jsonparser.h>
-#include <cosinepdf.h>
-#include <hittablepdf.h>
 
 // Some general constants
 constexpr int N_THREADS = 4;
-
-
-static Color ray_color(const Ray &r, const Color &background,
-                       std::shared_ptr<Hittable> world, std::shared_ptr<Hittable> lights, int depth)
-{
-    if (depth <= 0) {
-        return Color();
-    }
-
-    auto rec = HitRecord();
-
-    if (!world->hit(r, 0.001, infinity, rec)) {
-        return background;
-    }
-
-    Ray scattered;
-    Color attenuation;
-    Color emitted = rec.mat->emitted(r, rec, rec.u, rec.v, rec.p);
-    double pdf_val;
-    Color albedo;
-
-    if (!rec.mat->scatter(r, rec, albedo, scattered, pdf_val)) {
-        return emitted;
-    }
-//    HittablePdf light_pdf(lights, rec.p);
-//    scattered = Ray(rec.p, light_pdf.generate(), r.time());
-//    pdf_val = light_pdf.value(scattered.direction());
-
-    CosinePdf p(rec.normal);
-    scattered = Ray(rec.p, p.generate(), r.time());
-    pdf_val = p.value(scattered.direction());
-
-    return emitted +
-            albedo * rec.mat->scattering_pdf(r, rec, scattered) *
-            ray_color(scattered, background, world, lights, depth-1) / pdf_val;
-}
 
 struct WorkerCtx {
     std::shared_ptr<Scene> scene;

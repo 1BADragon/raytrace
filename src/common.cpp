@@ -22,8 +22,8 @@ double random_double(double min, double max) {
 }
 
 double clamp(double val, double min, double max)
-{
-    if (val < min) {
+{   
+    if (val < min || std::isnan(val)) {
         return min;
     } else if (val > max) {
         return max;

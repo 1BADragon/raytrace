@@ -30,16 +30,16 @@ set(srcs
     )
 
 add_executable(${PROJECT_NAME} ${srcs})
-target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -flto -rdynamic -fsanitize=address)
+target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -flto -rdynamic)
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 target_link_options(${PROJECT_NAME} PUBLIC -rdynamic -flto)
-target_link_libraries(${PROJECT_NAME} stb cjson pthread dl asan)
+target_link_libraries(${PROJECT_NAME} stb cjson pthread dl)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
     CXX_STANDARD 17
     C_STANDARD 11
-    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
+)
 
 
 add_subdirectory(samples)
