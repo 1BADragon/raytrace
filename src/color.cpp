@@ -5,9 +5,10 @@
 #include <hitrecord.h>
 #include <materials/material.h>
 #include <hittablepdf.h>
+#include <cosinepdf.h>
+#include <mixturepdf.h>
 #include <mutex>
 
-static std::mutex mut;
 
 Color ray_color(const Ray &r, const Color &background,
                        std::shared_ptr<Hittable> world, std::shared_ptr<Hittable> lights, int depth)
@@ -31,33 +32,18 @@ Color ray_color(const Ray &r, const Color &background,
     if (!rec.mat->scatter(r, rec, albedo, scattered, pdf_val)) {
         return emitted;
     }
-    HittablePdf light_pdf(lights, rec.p);
-    scattered = Ray(rec.p, light_pdf.generate(), r.time());
-    pdf_val = light_pdf.value(scattered.direction());
 
-//    CosinePdf p(rec.normal);
-//    scattered = Ray(rec.p, p.generate(), r.time());
-//    pdf_val = p.value(scattered.direction());
+    auto p0 = std::make_shared<HittablePdf>(lights, rec.p);
+    auto p1 = std::make_shared<CosinePdf>(rec.normal);
+    MixturePdf mixed_pdf(p0, p1);
+
+    scattered = Ray(rec.p, mixed_pdf.generate(), r.time());
+    pdf_val = mixed_pdf.value(scattered.direction());
 
     auto scattering_pdf = rec.mat->scattering_pdf(r, rec, scattered);
     auto color = ray_color(scattered, background, world, lights, depth-1);
 
     auto val = emitted + albedo * scattering_pdf * color / pdf_val;
-
-//    if (std::isnan(val.x()) ||
-//            std::isnan(val.y()) ||
-//            std::isnan(val.z())) {
-//        mut.lock();
-//        std::cerr << "\nval: " << val << std::endl;
-
-//        std::cerr << "emitted: " << emitted << std::endl;
-//        std::cerr << "albedo: " << albedo << std::endl;
-//        std::cerr << "pdf_val: " << pdf_val << std::endl;
-//        std::cerr << "scattering_pdf: " << scattering_pdf << std::endl;
-//        std::cerr << "color: " << color << std::endl;
-//        std::cerr << 0. / 0. << std::endl;
-//        abort();
-//    }
 
     return val;
 }

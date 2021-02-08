@@ -3,6 +3,8 @@
 
 #include <ray.h>
 #include <aabb.h>
+#include <typeinfo>
+#include <iostream>
 
 struct HitRecord;
 
@@ -13,11 +15,19 @@ public:
     virtual double pdf_value(const Point3& o, const Vec3 &v) const {
         (void) o;
         (void) v;
+
+        std::cerr << "Default pdf_value called: " << typeid(*this).name() << std::endl;
+        abort();
+
         return 0.0;
     }
 
     virtual Vec3 random(const Vec3 &o) const {
         (void) o;
+
+        std::cerr << "Default random called: " << typeid(*this).name() << std::endl;
+        abort();
+
         return Vec3(1, 0, 0);
     }
 };

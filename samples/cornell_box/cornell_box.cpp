@@ -7,8 +7,8 @@ BUILD_SCENE {
     Scene *scene = new Scene();
 
     scene->set_aspect_ratio(1.0 / 1.0);
-    scene->set_image_width(600);
-    scene->set_samples_per_pixel(10);
+    scene->set_image_width(1000);
+    scene->set_samples_per_pixel(1000);
     scene->set_max_depth(10);
     scene->set_background(Color(0.0, 0.0, 0.0));
 
@@ -37,7 +37,7 @@ BUILD_SCENE {
     scene->world()->add(std::make_shared<XZRect>(0, 555, 0, 555, 0, white));
     scene->world()->add(std::make_shared<XYRect>(0, 555, 0, 555, 555, white));
 
-    scene->lights()->add(std::make_shared<FlipFace>(std::make_shared<XZRect>(213, 343, 227, 332, 554, std::shared_ptr<Material>())));
+    scene->lights()->add(std::make_shared<XZRect>(213, 343, 227, 332, 554, std::shared_ptr<Material>()));
 
     std::shared_ptr<Hittable> box1 = std::make_shared<Box>(Point3(0,0,0), Point3(165, 330, 165), white);
     box1 = std::make_shared<RotateY>(box1, 15);
