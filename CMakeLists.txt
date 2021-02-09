@@ -30,9 +30,9 @@ set(srcs
     )
 
 add_executable(${PROJECT_NAME} ${srcs})
-target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -flto -rdynamic)
+target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -flto -march=native -rdynamic -ffast-math)
 target_include_directories(${PROJECT_NAME} PUBLIC src)
-target_link_options(${PROJECT_NAME} PUBLIC -rdynamic -flto)
+target_link_options(${PROJECT_NAME} PUBLIC -rdynamic -flto -march=native)
 target_link_libraries(${PROJECT_NAME} stb cjson pthread dl)
 
 set_target_properties(${PROJECT_NAME}
