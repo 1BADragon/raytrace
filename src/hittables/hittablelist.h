@@ -17,7 +17,13 @@ public:
 
     virtual bool bounding_box(double time0, double time1, Aabb &output_box) const override;
 
+    virtual double pdf_value(const Vec3 &o, const Vec3 &v) const override;
+
+    virtual Vec3 random(const Vec3 &o) const override;
+
     const std::vector<std::shared_ptr<Hittable>>& objects() const;
+
+    size_t n_objects() const { return _objects.size(); }
 
 private:
     std::vector<std::shared_ptr<Hittable>> _objects;

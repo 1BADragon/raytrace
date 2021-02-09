@@ -1,4 +1,5 @@
 #include <textures/imagetexture.h>
+#include <stb_image.h>
 
 ImageTexture::ImageTexture(const std::string &filename)
 {

@@ -38,6 +38,10 @@ class XZRect : public Hittable {
 
         virtual bool bounding_box(double time0, double time1, Aabb& output_box) const override;
 
+        virtual double pdf_value(const Point3 &origin, const Vec3 &v) const override;
+
+        virtual Vec3 random(const Vec3 &o) const override;
+
     public:
         double x0;
         double x1;

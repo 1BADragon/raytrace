@@ -38,6 +38,24 @@ bool HittableList::bounding_box(double time0, double time1, Aabb &output_box) co
     return true;
 }
 
+double HittableList::pdf_value(const Vec3 &o, const Vec3 &v) const
+{
+    auto weight = 1.0 / n_objects();
+    auto sum = 0.0;
+
+    for (const auto& object : _objects) {
+        sum += weight * object->pdf_value(o, v);
+    }
+
+    return sum;
+}
+
+Vec3 HittableList::random(const Vec3 &o) const
+{
+    auto int_size = static_cast<int>(n_objects());
+    return _objects[random_int(0, int_size-1)]->random(o);
+}
+
 const std::vector<std::shared_ptr<Hittable> > &HittableList::objects() const
 {
     return _objects;

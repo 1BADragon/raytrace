@@ -202,5 +202,5 @@ Vec3 operator*(double lhs, const Vec3 &rhs)
 
 std::ostream &operator<<(std::ostream &s, const Vec3 &rhs)
 {
-    return s << rhs.x() << ' ' << rhs.y() << ' ' << rhs.z();
+    return s << rhs.x() << ", " << rhs.y() << ", " << rhs.z();
 }

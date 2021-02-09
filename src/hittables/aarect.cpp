@@ -39,6 +39,26 @@ bool XZRect::bounding_box(double time0, double time1, Aabb& output_box) const {
     return true;
 }
 
+double XZRect::pdf_value(const Point3 &origin, const Vec3 &v) const
+{
+    HitRecord rec;
+    if (!this->hit(Ray(origin, v), 0.001, infinity, rec)) {
+        return 0;
+    }
+
+    auto area = (x1-x0)*(z1-z0);
+    auto distance_squared = rec.t * rec.t * v.length_squared();
+    auto cosine = std::fabs(v.dot(rec.normal) / v.length());
+
+    return distance_squared / (cosine * area);
+}
+
+Vec3 XZRect::random(const Vec3 &o) const
+{
+    auto random_point = Point3(random_double(x0, x1), k, random_double(z0, z1));
+    return random_point - o;
+}
+
 bool XZRect::hit(const Ray &r, double t_min, double t_max, HitRecord &rec) const
 {
     auto t = (k-r.origin().y()) / r.direction().y();

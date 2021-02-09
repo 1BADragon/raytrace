@@ -2,6 +2,7 @@
 #define MATERIAL_H
 
 #include <color.h>
+#include <scatterrecord.h>
 
 class Ray;
 class HitRecord;
@@ -9,10 +10,25 @@ class HitRecord;
 class Material
 {
 public:
-    virtual bool scatter(const Ray &r_in, const HitRecord &rec,
-                         Color &attenuation, Ray &scattered) const = 0;
+    virtual bool scatter(const Ray &r_in, const HitRecord &rec, ScatterRecord &srec) const {
+        (void) r_in;
+        (void) rec;
+        (void) srec;
+        return false;
+    }
 
-    virtual Color emitted(double u, double v, const Point3 &p) const {
+    virtual double scattering_pdf(
+            const Ray& r_in, const HitRecord& rec, const Ray& scattered
+            ) const {
+        (void) r_in;
+        (void) rec;
+        (void) scattered;
+        return 0;
+    }
+
+    virtual Color emitted(const Ray &r_in, const HitRecord &rec, double u, double v, const Point3 &p) const {
+        (void)r_in;
+        (void)rec;
         (void)u;
         (void)v;
         (void)p;

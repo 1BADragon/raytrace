@@ -31,7 +31,7 @@ static Vec3 build_vec(std::shared_ptr<BuilderAttr> v);
 SceneBuilder::SceneBuilder() :
     _scene(std::make_shared<Scene>()), _textures(), _materials()
 {
-
+    insert_material("none", std::make_shared<Material>());
 }
 
 std::shared_ptr<Texture> SceneBuilder::build_texture(const std::shared_ptr<BuilderAttr> ba)
@@ -97,6 +97,8 @@ std::shared_ptr<Hittable> SceneBuilder::build_hittable(const std::shared_ptr<Bui
         return build_rotatey(ba);
     } else if (type == "translate") {
         return build_translate(ba);
+    } else if (type == "flipface") {
+        return build_flipface(ba);
     } else {
         throw SceneBuildingError("Unknown object type: \"" + type + '"');
     }
@@ -224,6 +226,11 @@ void SceneBuilder::add_object_to_scene(std::shared_ptr<Hittable> h)
     scene()->add_object(h);
 }
 
+void SceneBuilder::add_light_to_scene(std::shared_ptr<Hittable> l)
+{
+    scene()->add_light(l);
+}
+
 std::shared_ptr<Texture> SceneBuilder::parse_texture(std::shared_ptr<BuilderAttr> ba)
 {
     switch (ba->type()) {
@@ -305,22 +312,11 @@ std::shared_ptr<Material> SceneBuilder::build_diffuselight(std::shared_ptr<Build
 
 std::shared_ptr<Hittable> SceneBuilder::build_sphere(std::shared_ptr<BuilderAttr> ba)
 {
-    if (ba->has_child("time0")) {
-        Point3 cen0 = build_point(ba->child("center0"));
-        Point3 cen1 = build_point(ba->child("center1"));
-        double time0 = ba->child("time0")->as_double();
-        double time1 = ba->child("time1")->as_double();
-        double r = ba->child("radius")->as_double();
-        auto m = parse_material(ba->child("material"));
+    Point3 center = build_point(ba->child("center"));
+    double r = ba->child("radius")->as_double();
+    auto m = parse_material(ba->child("material"));
 
-        return std::make_shared<Sphere>(cen0, cen1, time0, time1, r, m);
-    } else {
-        Point3 center = build_point(ba->child("center"));
-        double r = ba->child("radius")->as_double();
-        auto m = parse_material(ba->child("material"));
-
-        return std::make_shared<Sphere>(center, r, m);
-    }
+    return std::make_shared<Sphere>(center, r, m);
 }
 
 std::shared_ptr<Hittable> SceneBuilder::build_box(std::shared_ptr<BuilderAttr> ba)
@@ -391,6 +387,11 @@ std::shared_ptr<Hittable> SceneBuilder::build_translate(std::shared_ptr<BuilderA
                 build_hittable(ba->child("object")),
                 build_vec(ba->child("vec"))
                 );
+}
+
+std::shared_ptr<Hittable> SceneBuilder::build_flipface(std::shared_ptr<BuilderAttr> ba)
+{
+    return std::make_shared<FlipFace>(build_hittable(ba->child("object")));
 }
 
 static Color build_color(std::shared_ptr<BuilderAttr> c)
