@@ -8,11 +8,13 @@ Metal::Metal(const Color &a, double f) :
 
 }
 
-bool Metal::scatter(const Ray &r_in, const HitRecord &rec, Color &attenuation, Ray &scattered) const
+bool Metal::scatter(const Ray &r_in, const HitRecord &rec, ScatterRecord &srec) const
 {
     auto reflected = Vec3::reflect(r_in.direction().unit_vector(),
                                    rec.normal);
-    scattered = Ray(rec.p, reflected + this->fuzz * Vec3::random_in_unit_sphere(), r_in.time());
-    attenuation = this->albedo;
-    return scattered.direction().dot(rec.normal) > 0;
+    srec.specular_ray = Ray(rec.p, reflected+fuzz*Vec3::random_in_unit_sphere());
+    srec.attenuation = albedo;
+    srec.is_specular = true;
+    srec.pdf_ptr = nullptr;
+    return true;
 }

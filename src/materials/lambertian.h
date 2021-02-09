@@ -15,7 +15,7 @@ public:
     Lambertian(const Color &a): albedo(std::make_shared<SolidColor>(a)) {}
     Lambertian(std::shared_ptr<Texture> a) : albedo(a) {}
 
-    virtual bool scatter(const Ray &r_in, const HitRecord &rec, Color &attenuation, Ray &scattered, double &pdf) const override;
+    virtual bool scatter(const Ray &r_in, const HitRecord &rec, ScatterRecord &srec) const override;
 
     virtual double scattering_pdf(const Ray &r_in, const HitRecord &rec, const Ray &scattered) const override;
 

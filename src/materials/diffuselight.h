@@ -14,8 +14,6 @@ public:
     DiffuseLight(const Color &c) :
         emit(std::make_shared<SolidColor>(c)) {}
 
-    virtual bool scatter(const Ray &r_in, const HitRecord &rec, Color &albedo, Ray &scattered, double &pdf) const override;
-
     virtual Color emitted(const Ray &r_in, const HitRecord &rec, double u, double v, const Point3& p) const override;
 
 private:

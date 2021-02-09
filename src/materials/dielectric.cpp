@@ -5,9 +5,11 @@
 #include <color.h>
 #include <common.h>
 
-bool Dielectric::scatter(const Ray &r_in, const HitRecord &rec, Color &attenuation, Ray &scattered) const
+bool Dielectric::scatter(const Ray &r_in, const HitRecord &rec, ScatterRecord &srec) const
 {
-    attenuation = Color(1.0, 1.0, 1.0);
+    srec.is_specular = true;
+    srec.pdf_ptr = nullptr;
+    srec.attenuation = Color(1.0, 1.0, 1.0);
 
     auto refraction_radio = (rec.front_face)? 1.0 / this->ir : this->ir;
     auto unit_direction = r_in.direction().unit_vector();
@@ -23,7 +25,7 @@ bool Dielectric::scatter(const Ray &r_in, const HitRecord &rec, Color &attenuati
         direction = Vec3::refract(unit_direction, rec.normal, refraction_radio);
     }
 
-    scattered = Ray(rec.p, direction, r_in.time());
+    srec.specular_ray = Ray(rec.p, direction, r_in.time());
     return true;
 }
 

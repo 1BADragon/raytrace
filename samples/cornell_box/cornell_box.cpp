@@ -37,17 +37,23 @@ BUILD_SCENE {
     scene->world()->add(std::make_shared<XZRect>(0, 555, 0, 555, 0, white));
     scene->world()->add(std::make_shared<XYRect>(0, 555, 0, 555, 555, white));
 
-    scene->lights()->add(std::make_shared<XZRect>(213, 343, 227, 332, 554, std::shared_ptr<Material>()));
+    scene->lights()->add(std::make_shared<XZRect>(213, 343, 227, 332, 554, nullptr));
 
+    scene->lights()->add(std::make_shared<Sphere>(Point3(190, 90, 190), 90, nullptr));
+
+    auto aluminum = std::make_shared<Metal>(Color(8.0, 0.85, 0.88), 0.0);
     std::shared_ptr<Hittable> box1 = std::make_shared<Box>(Point3(0,0,0), Point3(165, 330, 165), white);
     box1 = std::make_shared<RotateY>(box1, 15);
     box1 = std::make_shared<Translate>(box1, Vec3(265, 0, 295));
     scene->world()->add(box1);
 
+    auto glass = std::make_shared<Dielectric>(1.5);
+    scene->world()->add(std::make_shared<Sphere>(Point3(190, 90, 190), 90, glass));
+
     std::shared_ptr<Hittable> box2 = std::make_shared<Box>(Point3(0,0,0), Point3(165, 165, 165), white);
     box2 = std::make_shared<RotateY>(box2, -18);
     box2 = std::make_shared<Translate>(box2, Vec3(130, 0, 65));
-    scene->world()->add(box2);
+    //scene->world()->add(box2);
 
     return scene;
 }

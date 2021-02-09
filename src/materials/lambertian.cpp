@@ -1,18 +1,16 @@
+#include <common.h>
 #include <materials/lambertian.h>
+#include <cosinepdf.h>
 #include <hitrecord.h>
 #include <ray.h>
 #include <vec3.h>
 #include <onb.h>
 
-bool Lambertian::scatter(const Ray &r_in, const HitRecord &rec, Color &albedo,
-                         Ray &scattered, double &pdf) const
+bool Lambertian::scatter(const Ray &r_in UNUSED, const HitRecord &rec, ScatterRecord &srec) const
 {
-    Onb uvw;
-    uvw.build_from_w(rec.normal);
-    auto direction = uvw.local(random_cosine_direction());
-    scattered = Ray(rec.p, direction.unit_vector(), r_in.time());
-    albedo = this->albedo->value(rec.u, rec.v, rec.p);
-    pdf = uvw.w().dot(scattered.direction()) / pi;
+    srec.is_specular = false;
+    srec.attenuation = albedo->value(rec.u, rec.v, rec.p);
+    srec.pdf_ptr = std::make_shared<CosinePdf>(rec.normal);
     return true;
 }
 

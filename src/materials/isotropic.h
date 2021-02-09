@@ -2,6 +2,7 @@
 #define ISOTROPIC_H
 
 #include <memory>
+#include <scatterrecord.h>
 #include <textures/texture.h>
 #include <textures/solidcolor.h>
 #include <materials/material.h>
@@ -14,7 +15,7 @@ public:
     Isotropic(std::shared_ptr<Texture> a) :
         albedo(a) {}
 
-    virtual bool scatter(const Ray &r_in, const HitRecord &rec, Color &attenuation, Ray &scattered) const ;
+    virtual bool scatter(const Ray &r_in, const HitRecord &rec, ScatterRecord &srec) const override;
 
 private:
     std::shared_ptr<Texture> albedo;

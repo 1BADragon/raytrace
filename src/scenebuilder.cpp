@@ -312,22 +312,11 @@ std::shared_ptr<Material> SceneBuilder::build_diffuselight(std::shared_ptr<Build
 
 std::shared_ptr<Hittable> SceneBuilder::build_sphere(std::shared_ptr<BuilderAttr> ba)
 {
-    if (ba->has_child("time0")) {
-        Point3 cen0 = build_point(ba->child("center0"));
-        Point3 cen1 = build_point(ba->child("center1"));
-        double time0 = ba->child("time0")->as_double();
-        double time1 = ba->child("time1")->as_double();
-        double r = ba->child("radius")->as_double();
-        auto m = parse_material(ba->child("material"));
+    Point3 center = build_point(ba->child("center"));
+    double r = ba->child("radius")->as_double();
+    auto m = parse_material(ba->child("material"));
 
-        return std::make_shared<Sphere>(cen0, cen1, time0, time1, r, m);
-    } else {
-        Point3 center = build_point(ba->child("center"));
-        double r = ba->child("radius")->as_double();
-        auto m = parse_material(ba->child("material"));
-
-        return std::make_shared<Sphere>(center, r, m);
-    }
+    return std::make_shared<Sphere>(center, r, m);
 }
 
 std::shared_ptr<Hittable> SceneBuilder::build_box(std::shared_ptr<BuilderAttr> ba)
