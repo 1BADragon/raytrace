@@ -43,7 +43,7 @@ BUILD_SCENE {
 
     auto aluminum = std::make_shared<Metal>(Color(8.0, 0.85, 0.88), 0.0);
     std::shared_ptr<Hittable> box1 = std::make_shared<Box>(Point3(0,0,0), Point3(165, 330, 165), white);
-    box1 = std::make_shared<RotateY>(box1, 15);
+    box1 = std::make_shared<Rotate>(box1, 0, -15, 0);
     box1 = std::make_shared<Translate>(box1, Vec3(265, 0, 295));
     scene->world()->add(box1);
 
@@ -51,7 +51,7 @@ BUILD_SCENE {
     scene->world()->add(std::make_shared<Sphere>(Point3(190, 90, 190), 90, glass));
 
     std::shared_ptr<Hittable> box2 = std::make_shared<Box>(Point3(0,0,0), Point3(165, 165, 165), white);
-    box2 = std::make_shared<RotateY>(box2, -18);
+    box2 = std::make_shared<Rotate>(box2, 0, -18, 0);
     box2 = std::make_shared<Translate>(box2, Vec3(130, 0, 65));
     //scene->world()->add(box2);
 

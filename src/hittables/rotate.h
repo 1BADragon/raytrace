@@ -3,11 +3,12 @@
 
 #include <memory>
 #include <hittables/hittable.h>
+#include <mat3.h>
 
-class RotateY : public Hittable
+class Rotate : public Hittable
 {
 public:
-    RotateY(std::shared_ptr<Hittable> p, double angle);
+    Rotate(std::shared_ptr<Hittable> p, double x, double y, double z);
 
     virtual bool hit(const Ray &r, double min, double max, HitRecord &rec) const override;
 
@@ -15,8 +16,7 @@ public:
 
 private:
     std::shared_ptr<Hittable> ptr;
-    double sin_theta;
-    double cos_theta;
+    Mat3 _transform;
     bool hasbox;
     Aabb bbox;
 };

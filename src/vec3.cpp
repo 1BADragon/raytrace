@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <vec3.h>
 #include <common.h>
+#include <mat3.h>
 
 Vec3::Vec3() :
     _x(0), _y(0), _z(0)

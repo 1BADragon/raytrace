@@ -93,7 +93,7 @@ std::shared_ptr<Hittable> SceneBuilder::build_hittable(const std::shared_ptr<Bui
         return build_xz_rect(ba);
     } else if (type == "yz_rect") {
         return build_yz_rect(ba);
-    } else if (type == "rotatey") {
+    } else if (type == "rotate") {
         return build_rotatey(ba);
     } else if (type == "translate") {
         return build_translate(ba);
@@ -375,9 +375,11 @@ std::shared_ptr<Hittable> SceneBuilder::build_yz_rect(std::shared_ptr<BuilderAtt
 
 std::shared_ptr<Hittable> SceneBuilder::build_rotatey(std::shared_ptr<BuilderAttr> ba)
 {
-    return std::make_shared<RotateY>(
+    return std::make_shared<Rotate>(
                 build_hittable(ba->child("object")),
-                ba->child("angle")->as_double()
+                ba->child("x")->as_double(),
+                ba->child("y")->as_double(),
+                ba->child("z")->as_double()
                 );
 }
 
