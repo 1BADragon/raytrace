@@ -9,9 +9,8 @@ Rotate::Rotate(std::shared_ptr<Hittable> p, double x, double y, double z) :
     auto b = degrees_to_radians(y);
     auto g = degrees_to_radians(z);
 
-    _transform[0] = {cos(a) * cos(b), cos(a)*sin(b)*sin(g) - sin(a)*cos(g), cos(a)*sin(b)*cos(g) + sin(a)*sin(g)};
-    _transform[1] = {sin(a)*cos(b), sin(a)*sin(b)*sin(g) + cos(a)*cos(g), sin(a)*sin(b)*cos(g) - cos(a)*sin(g)};
-    _transform[2] = {-sin(b), cos(b)*sin(g), cos(b)*cos(g)};
+    _transform = build_transform_mat(a, b, g);
+    _inv_transform = build_transform_mat(-a, -b, -g);
 
     hasbox = ptr->bounding_box(0, 1, bbox);
 
@@ -54,8 +53,8 @@ bool Rotate::hit(const Ray &r, double min, double max, HitRecord &rec) const
     auto p = rec.p;
     auto normal = rec.normal;
 
-    p = _transform.cross(rec.p);
-    normal = _transform.cross(rec.normal);
+    p = _inv_transform.cross(rec.p);
+    normal = _inv_transform.cross(rec.normal);
 
     rec.p = p;
     rec.set_face_normal(rotated_r, normal);
@@ -69,4 +68,15 @@ bool Rotate::bounding_box(double time0, double time1, Aabb &output_box) const
     (void)time1;
     output_box = bbox;
     return hasbox;
+}
+
+Mat3 Rotate::build_transform_mat(double a, double b, double g)
+{
+    Mat3 res;
+
+    res[0] = {cos(a) * cos(b), cos(a)*sin(b)*sin(g) - sin(a)*cos(g), cos(a)*sin(b)*cos(g) + sin(a)*sin(g)};
+    res[1] = {sin(a)*cos(b), sin(a)*sin(b)*sin(g) + cos(a)*cos(g), sin(a)*sin(b)*cos(g) - cos(a)*sin(g)};
+    res[2] = {-sin(b), cos(b)*sin(g), cos(b)*cos(g)};
+
+    return res;
 }

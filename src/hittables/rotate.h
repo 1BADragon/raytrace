@@ -17,8 +17,11 @@ public:
 private:
     std::shared_ptr<Hittable> ptr;
     Mat3 _transform;
+    Mat3 _inv_transform;
     bool hasbox;
     Aabb bbox;
+
+    static Mat3 build_transform_mat(double a, double b, double g);
 };
 
 #endif

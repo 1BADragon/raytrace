@@ -10,7 +10,7 @@ BUILD_SCENE
 
     const auto aspect_ratio = 3.0 / 2.0;
     const int image_width = 1200;
-    const int samples_per_pixel = 20;
+    const int samples_per_pixel = 500;
     const int max_depth = 50;
 
     scene->set_aspect_ratio(aspect_ratio);

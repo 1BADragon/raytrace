@@ -46,7 +46,6 @@ Color ray_color(const Ray &r, const Color &background,
     auto pdf_val = pdf->value(scattered.direction());
     auto scattering = rec.mat->scattering_pdf(r, rec, scattered);
 
-
     return emitted
             + srec.attenuation * scattering
             * ray_color(scattered, background, world, lights, depth-1) / pdf_val;
