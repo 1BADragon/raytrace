@@ -33,17 +33,19 @@ Color ray_color(const Ray &r, const Color &background,
         return srec.attenuation * ray_color(srec.specular_ray, background, world, lights, depth-1);
     }
 
-    auto light_ptr = std::make_shared<HittablePdf>(lights, rec.p);
-    MixturePdf p(light_ptr, srec.pdf_ptr);
+    std::shared_ptr<Pdf> pdf = srec.pdf_ptr;
 
-    Ray scattered = Ray(rec.p, p.generate(), r.time());
-
-    auto pdf_val = 1.0;
-    auto scattering = 1.0;
     if (lights->n_objects()) {
-        pdf_val = p.value(scattered.direction());
-        scattering = rec.mat->scattering_pdf(r, rec, scattered);
+        auto light_ptr = std::make_shared<HittablePdf>(lights, rec.p);
+        auto p = std::make_shared<MixturePdf>(light_ptr, srec.pdf_ptr);
+        pdf = p;
     }
+
+    Ray scattered = Ray(rec.p, pdf->generate(), r.time());
+
+    auto pdf_val = pdf->value(scattered.direction());
+    auto scattering = rec.mat->scattering_pdf(r, rec, scattered);
+
 
     return emitted
             + srec.attenuation * scattering
