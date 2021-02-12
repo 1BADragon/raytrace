@@ -53,7 +53,11 @@ double HittableList::pdf_value(const Vec3 &o, const Vec3 &v) const
 Vec3 HittableList::random(const Vec3 &o) const
 {
     auto int_size = static_cast<int>(n_objects());
-    return _objects[random_int(0, int_size-1)]->random(o);
+    if (_objects.size()) {
+        return _objects[random_int(0, int_size-1)]->random(o);
+    } else {
+        return Hittable::random(o);
+    }
 }
 
 const std::vector<std::shared_ptr<Hittable> > &HittableList::objects() const

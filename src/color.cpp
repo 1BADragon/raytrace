@@ -11,7 +11,7 @@
 
 
 Color ray_color(const Ray &r, const Color &background,
-                       std::shared_ptr<Hittable> world, std::shared_ptr<Hittable> lights, int depth)
+                       std::shared_ptr<Hittable> world, std::shared_ptr<HittableList> lights, int depth)
 {
     if (depth <= 0) {
         return Color();
@@ -37,10 +37,16 @@ Color ray_color(const Ray &r, const Color &background,
     MixturePdf p(light_ptr, srec.pdf_ptr);
 
     Ray scattered = Ray(rec.p, p.generate(), r.time());
-    auto pdf_val = p.value(scattered.direction());
+
+    auto pdf_val = 1.0;
+    auto scattering = 1.0;
+    if (lights->n_objects()) {
+        pdf_val = p.value(scattered.direction());
+        scattering = rec.mat->scattering_pdf(r, rec, scattered);
+    }
 
     return emitted
-            + srec.attenuation * rec.mat->scattering_pdf(r, rec, scattered)
+            + srec.attenuation * scattering
             * ray_color(scattered, background, world, lights, depth-1) / pdf_val;
 }
 
