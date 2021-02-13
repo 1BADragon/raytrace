@@ -9,3 +9,4 @@ endfunction()
 
 add_sample(cornell_box cornell_box.cpp)
 add_sample(marbles marbles.cpp)
+add_sample(junkyard junkyard.cpp)
