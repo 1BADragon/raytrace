@@ -8,8 +8,8 @@ BUILD_SCENE
 {
     Scene * scene = new Scene();
 
-    const auto aspect_ratio = 3.0 / 2.0;
-    const int image_width = 1200;
+    const auto aspect_ratio = 16.0 / 9.0;
+    const int image_width = 1920;
     const int samples_per_pixel = 500;
     const int max_depth = 50;
 
