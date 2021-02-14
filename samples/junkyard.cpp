@@ -40,12 +40,17 @@ BUILD_SCENE
 
     scene->add_object(ground);
 
-    auto sun = std::make_shared<Sphere>(Point3(-250, 500, -250), 50, nullptr);
+    auto sun = std::make_shared<Sphere>(Point3(-100, 100, -100), 50, nullptr);
     scene->add_light(sun);
 
-    auto center_pillar = std::make_shared<Box>(Point3(-5, 0, -5), Point3(5, 25, 5), red);
+    auto center_pillar = std::make_shared<Box>(Point3(-1, 50, -1), Point3(1, 100, 1), red);
 
     scene->add_object(center_pillar);
+
+    for (int i = 0; i < 180; i+=30) {
+        auto rotate = std::make_shared<Rotate>(center_pillar, 0, 0, i);
+        scene->add_object(rotate);
+    }
 
     return scene;
 }

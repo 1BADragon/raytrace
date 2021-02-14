@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -139,13 +140,23 @@ int main(int argc, char **argv)
         worker->t.join();
     }
 
-    std::cout << "P3\n" << scene->image_width() << ' ' << scene->image_height() << "\n255\n";
+#if 0
+    auto &outf = std::cout;
+#else
+    auto outf = std::ofstream("image.ppm");
+#endif
+
+    outf << "P3\n" << scene->image_width() << ' ' << scene->image_height() << "\n255\n";
 
     for (auto &scanline : *image) {
         for (auto &pixel : scanline) {
-            write_color(std::cout, pixel, scene->samples_per_pixel());
+            write_color(outf, pixel, scene->samples_per_pixel());
         }
     }
+
+    outf.close();
+
+    system("display image.ppm");
 
     std::clog << "\nDone.\n";
 }
