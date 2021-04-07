@@ -10,9 +10,6 @@
 #include <color.h>
 #include <jsonparser.h>
 
-// Some general constants
-constexpr int N_THREADS = 4;
-
 struct WorkerCtx {
     std::shared_ptr<Scene> scene;
     std::thread t;
@@ -98,6 +95,7 @@ static std::shared_ptr<Scene> load_scene_from_args(std::vector<std::string> &arg
 
 int main(int argc, char **argv)
 {
+    size_t n_workers = std::thread::hardware_concurrency();
     std::vector<std::string> args(argv, argv+argc);
 
     auto scene = load_scene_from_args(args);
@@ -106,6 +104,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    std::cerr << "Worker count: " << n_workers << std::endl;
     std::cerr << "Image size: " << scene->image_width() << ", "
               << scene->image_height() << std::endl;
     std::cerr << "spp: " << scene->samples_per_pixel() << std::endl;
@@ -121,7 +120,7 @@ int main(int argc, char **argv)
     auto line_mut = std::make_shared<std::mutex>();
     auto next_line = std::make_shared<int>(scene->image_height() - 1);
 
-    for (int i = 0; i < N_THREADS; ++i) {
+    for (size_t i = 0; i < n_workers; ++i) {
         auto worker_ctx = std::make_shared<WorkerCtx>();
         worker_ctx->scene = scene;
         // worker->thread...
