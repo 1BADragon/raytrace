@@ -2,9 +2,6 @@
 
 Box::Box(const Point3 &p0, const Point3 &p1, std::shared_ptr<Material> ptr)
 {
-    box_min = p0;
-    box_max = p1;
-
     sides.add(std::make_shared<XYRect>(p0.x(), p1.x(), p0.y(), p1.y(), p1.z(), ptr));
     sides.add(std::make_shared<XYRect>(p0.x(), p1.x(), p0.y(), p1.y(), p0.z(), ptr));
 

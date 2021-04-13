@@ -5,6 +5,7 @@
 #include <vector>
 #include <assert.h>
 #include <dlfcn.h>
+#include <gtk/gtk.h>
 
 #include <scene.h>
 #include <color.h>

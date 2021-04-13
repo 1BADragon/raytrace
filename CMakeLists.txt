@@ -4,6 +4,9 @@ project(raytrace)
 set(DEPS_INSTALL_DIR ${CMAKE_BINARY_DIR}/deps_installs)
 file(MAKE_DIRECTORY ${DEPS_INSTALL_DIR})
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+
 add_subdirectory(deps)
 
 set(RAYTRACE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/src)
@@ -31,10 +34,12 @@ set(srcs
     )
 
 add_executable(${PROJECT_NAME} ${srcs})
-target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -flto -march=native -rdynamic -ffast-math)
-target_include_directories(${PROJECT_NAME} PUBLIC src)
+target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra -flto -march=native
+    -rdynamic -ffast-math ${GTK3_CFLAGS_OTHER})
+target_include_directories(${PROJECT_NAME} PUBLIC src ${GTK3_INCLUDE_DIRS})
 target_link_options(${PROJECT_NAME} PUBLIC -rdynamic -flto -march=native)
-target_link_libraries(${PROJECT_NAME} stb cjson pthread dl)
+target_link_libraries(${PROJECT_NAME} stb ${GTK3_LIBRARIES} cjson pthread dl)
+target_link_directories(${PROJECT_NAME} PRIVATE ${GTK3_LIBRARY_DIRS})
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES

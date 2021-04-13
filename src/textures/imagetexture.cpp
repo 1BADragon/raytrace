@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <textures/imagetexture.h>
 #include <stb_image.h>
 
@@ -23,8 +24,8 @@ Color ImageTexture::value(double u, double v, const Point3 &p) const
         return Color(0, 1, 1);
     }
 
-    u = clamp(u, 0., 1.);
-    v = 1.0 - clamp(v, 0., 1.);
+    u = std::clamp(u, 0., 1.);
+    v = 1.0 - std::clamp(v, 0., 1.);
 
     auto i = static_cast<int>(u * width);
     auto j = static_cast<int>(v * height);
