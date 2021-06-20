@@ -26,3 +26,8 @@ bool Translate::bounding_box(double time0, double time1, Aabb &output_box) const
 
     return true;
 }
+
+int Translate::n_children() const
+{
+    return ptr->n_children() + 1;
+}

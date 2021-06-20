@@ -70,6 +70,11 @@ bool Rotate::bounding_box(double time0, double time1, Aabb &output_box) const
     return hasbox;
 }
 
+int Rotate::n_children() const
+{
+    return ptr->n_children() + 1;
+}
+
 Mat3 Rotate::build_transform_mat(double a, double b, double g)
 {
     Mat3 res;

@@ -5,6 +5,7 @@ function(add_sample name)
     set_target_properties(${name}
         PROPERTIES
         PREFIX "")
+    target_link_libraries(${name} Qt5::Widgets)
 endfunction()
 
 add_sample(cornell_box cornell_box.cpp)

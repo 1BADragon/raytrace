@@ -24,6 +24,10 @@ public:
 
         return Vec3(1, 0, 0);
     }
+
+    virtual int n_children() const {
+        return 0;
+    }
 };
 
 #endif // HITTABLE_H

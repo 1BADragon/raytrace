@@ -16,3 +16,8 @@ bool FlipFace::bounding_box(double time0, double time1, Aabb &output_box) const
 {
     return ptr->bounding_box(time0, time1, output_box);
 }
+
+int FlipFace::n_children() const
+{
+    return ptr->n_children() + 1;
+}

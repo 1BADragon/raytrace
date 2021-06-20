@@ -19,6 +19,8 @@ public:
 
     virtual double pdf_value(const Vec3 &o, const Vec3 &v) const override;
 
+    virtual int n_children() const override;
+
     virtual Vec3 random(const Vec3 &o) const override;
 
     const std::vector<std::shared_ptr<Hittable>>& objects() const;

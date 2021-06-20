@@ -4,6 +4,12 @@
 
 BvhNode::BvhNode(const std::vector<std::shared_ptr<Hittable> > &src_objects, size_t start, size_t end, double time0, double time1)
 {
+    _n_children = 1;
+
+    for (const auto &h : src_objects) {
+        _n_children += h->n_children();
+    }
+
     auto objects = src_objects;
 
     int axis = random_int(0, 2);
@@ -61,6 +67,11 @@ bool BvhNode::bounding_box(double time0, double time1, Aabb &output_box) const
     (void)time1;
     output_box = box;
     return true;
+}
+
+int BvhNode::n_children() const
+{
+    return _n_children;
 }
 
 bool box_compare(const std::shared_ptr<Hittable> a, const std::shared_ptr<Hittable> b, int axis) {

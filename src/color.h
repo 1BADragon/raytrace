@@ -10,7 +10,7 @@
 
 using Color = Vec3;
 
-void write_color(std::ostream &s, const Color pixel_color, size_t samples_per_pixel);
+void write_color(std::ostream &s, const Color pixel_color);
 
 Color ray_color(const Ray &r, const Color &background,
                 std::shared_ptr<Hittable> world, std::shared_ptr<HittableList> lights, int depth);

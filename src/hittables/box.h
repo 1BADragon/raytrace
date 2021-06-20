@@ -15,6 +15,8 @@ public:
 
     virtual bool bounding_box(double time0, double time1, Aabb &output_box) const override;
 
+    virtual int n_children() const override;
+
 private:
     Point3 box_min;
     Point3 box_max;

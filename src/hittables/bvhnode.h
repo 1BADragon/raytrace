@@ -24,7 +24,10 @@ public:
 
     virtual bool bounding_box(double time0, double time1, Aabb& output_box) const override;
 
+    virtual int n_children() const override;
+
 public:
+    int _n_children;
     std::shared_ptr<Hittable> left;
     std::shared_ptr<Hittable> right;
     Aabb box;

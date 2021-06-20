@@ -50,6 +50,17 @@ double HittableList::pdf_value(const Vec3 &o, const Vec3 &v) const
     return sum;
 }
 
+int HittableList::n_children() const
+{
+    int tmp = n_objects();
+
+    for (const auto &c : _objects) {
+        tmp += c->n_children();
+    }
+
+    return tmp;
+}
+
 Vec3 HittableList::random(const Vec3 &o) const
 {
     auto int_size = static_cast<int>(n_objects());

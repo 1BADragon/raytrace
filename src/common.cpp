@@ -3,10 +3,12 @@
 #include <cstdlib>
 #include <common.h>
 
+#ifndef degrees_to_radians
 double degrees_to_radians(double degrees)
 {
     return degrees * pi / 180.0;
 }
+#endif
 
 double random_double() {
     static thread_local std::default_random_engine rng(std::hash<std::thread::id>()(std::this_thread::get_id()));

@@ -24,3 +24,8 @@ bool Box::bounding_box(double time0, double time1, Aabb &output_box) const
     output_box = Aabb(box_min, box_max);
     return true;
 }
+
+int Box::n_children() const
+{
+    return sides.n_children();
+}

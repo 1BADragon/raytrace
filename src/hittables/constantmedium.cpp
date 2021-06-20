@@ -65,3 +65,8 @@ bool ConstantMedium::bounding_box(double time0, double time1, Aabb &output_box) 
 {
     return boundary->bounding_box(time0, time1, output_box);
 }
+
+int ConstantMedium::n_children() const
+{
+    return boundary->n_children() + 1;
+}
